@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.learningsqlite.ViewDbActivity" >
+ 	<item
+        android:id="@+id/menu_item_sort_order"
+        android:orderInCategory="90"
+        android:showAsAction="never"
+        android:title="@string/menu_item_sort_order"/> 
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/> 
+    <item 
+        android:id="@+id/search_for_record"
+        android:orderInCategory="2"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_item_search"
+        android:icon="@drawable/ic_action_search"
+        />
+    
+    <item 
+        android:id="@+id/add_record"
+        android:orderInCategory="1"
+        android:showAsAction="ifRoom"
+        android:title="@string/add_record_button"
+        android:icon="@drawable/ic_action_new"/>
+
+</menu>

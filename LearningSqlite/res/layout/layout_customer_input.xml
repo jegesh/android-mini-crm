@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_first_name_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_first_name"
+	    android:hint="@string/customer_first_name_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_last_name_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_last_name"
+	    android:hint="@string/customer_last_name_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_phone1_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_phone1"
+	    android:hint="@string/customer_phone1_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_phone2_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_phone2"
+	    android:hint="@string/customer_phone2_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_email_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_email"
+	    android:hint="@string/customer_email_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_address_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_address"
+	    android:hint="@string/customer_address_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_contact_name_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_contact_name"
+	    android:hint="@string/customer_contact_name_hint"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_contact_phone_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customers_input_contact_phone"
+	    android:hint="@string/customer_contact_phone_hint"
+	    />
+    <LinearLayout 
+        style="@android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button style="@android:attr/buttonBarButtonStyle"
+            android:text="@string/save_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:onClick="saveNew"/>
+        <Button style="@android:attr/buttonBarButtonStyle" 
+            android:text="@string/cancel_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:onClick="cancel"/>
+        
+    </LinearLayout>
+
+</LinearLayout>
+</ScrollView>

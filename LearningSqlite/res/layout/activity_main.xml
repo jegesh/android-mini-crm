@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="com.example.learningsqlite.MainActivity$PlaceholderFragment" >
+
+    
+
+        
+	<Button style="@style/MenuButtons"
+	    android:tag="Orders" 
+		android:text="@string/menu_orders_button" android:onClick="viewDb" />
+	<Button style="@style/MenuButtons"
+	    android:tag="Suppliers"
+		android:text="@string/menu_suppliers_button" android:onClick="viewDb" />
+	  
+	<Button style="@style/MenuButtons"
+	    android:tag="Customers"
+		android:text="@string/menu_customers_button" android:onClick="viewDb" />
+
+	<Button style="@style/MenuButtons"
+	    android:tag="Workers"
+		android:text="@string/menu_workers_button" android:onClick="viewDb" />
+	<Button style="@style/MenuButtons"
+	    android:tag="Products"
+		android:text="@string/menu_products_button" android:onClick="viewDb" />
+	<Button style="@style/MenuButtons"
+	    android:tag="Bids"
+		android:text="@string/menu_bids_button" android:onClick="viewDb" />
+	
+</LinearLayout>
+
+
+    
+    
+

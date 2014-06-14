@@ -1,0 +1,22 @@
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.learningsqlite.ViewDbActivity" >
+    
+    <item 
+        android:id="@+id/menu_item_delete_record"
+        android:orderInCategory="1"
+        android:showAsAction="ifRoom"
+        android:title="@string/delete_button"
+        android:icon="@drawable/ic_action_discard"
+        />
+    <item 
+        android:id="@+id/menu_item_archive_record"
+        android:orderInCategory="2"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_collection"
+        android:title="@string/archive_menu_item"
+        
+        />
+
+</menu>

@@ -1,0 +1,43 @@
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@android:style/Widget.ListView.White"
+    android:orientation="vertical"
+    android:id="@+id/view_db_orders_list_item"
+    tools:context="com.example.learningsqlite.ViewDbActivity"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent" >
+     <!--  
+    
+    <CheckBox 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/view_activity_list_checkbox"
+        android:onClick="selectRecord"
+        style="?android:checkboxStyle"
+        android:focusable="false"
+        /> -->
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="horizontal">
+	    <TextView style="@style/ListItemHeader" 
+	        android:id="@+id/field_title1"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        />
+	    <TextView style="@style/ListItemHeader"
+	        android:id="@+id/field_title2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        />
+    </LinearLayout>
+	<TextView 
+        style="@style/ListItemSubheader"
+        android:id="@+id/field_subtitle"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        
+        />
+        
+    
+	
+    
+    
+</LinearLayout>

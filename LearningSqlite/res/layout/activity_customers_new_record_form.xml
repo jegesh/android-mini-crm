@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+  <!--   
+	<EditText style="@style/FormInputs"
+	    android:id="@+id/customer_new_record_first_name"
+	    android:hint="@string/customer_fname_hint"
+	    /> 
+	
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customer_new_record_last_name"
+	    android:hint="@string/customer_lname_hint"
+	    />
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customer_new_record_phone"
+	    android:hint="@string/customer_phone_hint"
+	    />
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customer_new_record_email"
+	    android:hint="@string/customer_email_hint"
+	    />
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/customer_new_record_city"
+	    android:hint="@string/customer_city_hint"
+	    />
+    -->
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button android:text="@string/save_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:onClick="saveNew"/>
+        <Button android:text="@string/cancel_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:onClick="cancel"/>
+        
+    </LinearLayout>
+    
+    
+</LinearLayout>
+</ScrollView>
