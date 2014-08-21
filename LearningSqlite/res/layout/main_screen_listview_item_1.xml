@@ -5,7 +5,9 @@
     android:id="@+id/view_db_orders_list_item"
     tools:context="com.example.learningsqlite.ViewDbActivity"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent" >
+    android:layout_width="match_parent"
+    android:padding="3dp"
+    android:background="#ffffff" >
      <!--  
     <CheckBox 
         android:layout_width="wrap_content"

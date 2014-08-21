@@ -25,7 +25,7 @@ public class JobWorkersDBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// needs to be in parallel thread, could take quite some time! (?)
-		try{
+	/*	try{
 		db.execSQL("CREATE TABLE temp AS (SELECT * FROM "+JobWorkersContract.JobWorkers.TABLE_NAME+")");
 		db.execSQL(JobWorkersContract.JobWorkers.SQL_DELETE_TABLE);
 		if(oldVersion==6 && newVersion==7)
@@ -37,7 +37,7 @@ public class JobWorkersDBHelper extends SQLiteOpenHelper {
 		}catch(Exception e){
 			Log.d(JobWorkersContract.JobWorkers.TABLE_NAME+" table", e.getMessage());
 		}
-		
+		*/
 		// fill table with saved data
 
 	}

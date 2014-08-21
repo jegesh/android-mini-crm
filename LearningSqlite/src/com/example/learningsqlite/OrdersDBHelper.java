@@ -1,5 +1,7 @@
 package com.example.learningsqlite;
 
+import com.example.learningsqlite.OrdersContract.Orders;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -7,7 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class OrdersDBHelper extends SQLiteOpenHelper {
-	public static final int DATABASE_VERSION = 10;
+	public static final int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "main.db";
 	
 	public OrdersDBHelper(Context context){
@@ -45,7 +47,7 @@ public class OrdersDBHelper extends SQLiteOpenHelper {
 //		db.execSQL(OrdersContract.Orders.SQL_DELETE_ORDERS);
 //		db.execSQL(OrdersContract.Orders.SQL_CREATE_ORDERS_TABLE);
 		// fill table with saved data
-
+	
 	}
 	
 	@Override

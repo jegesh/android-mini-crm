@@ -1,5 +1,7 @@
 package com.example.learningsqlite;
 
+import com.example.learningsqlite.ProductsContract.Products;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -25,6 +27,7 @@ public class ProductsDBHelper  extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// needs to be in parallel thread, could take quite some time! (?)
+		/*
 		try{
 		db.execSQL("CREATE TABLE temp AS (SELECT * FROM "+ProductsContract.Products.TABLE_NAME+")");
 		db.execSQL(ProductsContract.Products.SQL_DELETE_TABLE);
@@ -32,10 +35,10 @@ public class ProductsDBHelper  extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS temp");
 		}catch(Exception e){
 			Log.d(ProductsContract.Products.TABLE_NAME+" table", e.getMessage());
-		}
+		}*/
 		
 		// fill table with saved data
-
+		
 	}
 	
 	@Override

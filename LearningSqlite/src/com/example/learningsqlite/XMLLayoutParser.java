@@ -45,6 +45,21 @@ public class XMLLayoutParser {
 						long viewId = parser.getAttributeResourceValue(0, 0);
 						idList.add((int)viewId);
 						Log.d("Test", "Id: "+ viewId );
+					}else{
+						boolean reachedEnd = false;
+						int total = parser.getAttributeCount();
+						int attCounter = 0;
+						if(activity instanceof InputFormActivity){
+							while(!reachedEnd && attCounter<total){
+
+								attCounter++;
+								if(parser.getAttributeName(attCounter).equals("id")){
+									long viewId = parser.getAttributeResourceValue(attCounter, 0);
+									idList.add((int)viewId);
+									reachedEnd = true;
+								}
+							}
+						}
 					}
 				}
 			}

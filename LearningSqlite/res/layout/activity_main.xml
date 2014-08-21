@@ -11,29 +11,44 @@
     tools:context="com.example.learningsqlite.MainActivity$PlaceholderFragment" >
 
     
-
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:orientation="horizontal">
         
 	<Button style="@style/MenuButtons"
 	    android:tag="Orders" 
+	    android:layout_weight="1"
 		android:text="@string/menu_orders_button" android:onClick="viewDb" />
 	<Button style="@style/MenuButtons"
 	    android:tag="Suppliers"
-		android:text="@string/menu_suppliers_button" android:onClick="viewDb" />
+		android:text="@string/menu_suppliers_button" android:onClick="viewDb" 
+		android:visibility="gone"/>
 	  
 	<Button style="@style/MenuButtons"
 	    android:tag="Customers"
+	    android:layout_weight="1"
 		android:text="@string/menu_customers_button" android:onClick="viewDb" />
-
+	</LinearLayout>
+		<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:orientation="horizontal">
 	<Button style="@style/MenuButtons"
 	    android:tag="Workers"
+	    android:layout_weight="1"
 		android:text="@string/menu_workers_button" android:onClick="viewDb" />
 	<Button style="@style/MenuButtons"
 	    android:tag="Products"
+	    android:layout_weight="1"
 		android:text="@string/menu_products_button" android:onClick="viewDb" />
 	<Button style="@style/MenuButtons"
 	    android:tag="Bids"
-		android:text="@string/menu_bids_button" android:onClick="viewDb" />
-	
+		android:text="@string/menu_bids_button" android:onClick="viewDb"
+		android:visibility="gone" />
+	</LinearLayout>
 </LinearLayout>
 
 

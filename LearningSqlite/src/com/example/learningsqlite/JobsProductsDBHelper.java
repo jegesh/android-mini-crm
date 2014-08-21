@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class JobsProductsDBHelper  extends SQLiteOpenHelper {
-	public static final int DATABASE_VERSION = 2;
+	public static final int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "main.db";
 	
 	public JobsProductsDBHelper(Context context){
@@ -24,7 +24,8 @@ public class JobsProductsDBHelper  extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// needs to be in parallel thread, could take quite some time! (?)
+		// needs to be in parallel thread, could take quite some time! (?) 
+		/*
 		int ver = oldVersion;
 		while(ver<newVersion){
 		switch (ver) {
@@ -35,7 +36,7 @@ public class JobsProductsDBHelper  extends SQLiteOpenHelper {
 
 		default:
 			break;
-		}
+		} */
 		}/*
 		try{
 		db.execSQL("CREATE TABLE temp AS (SELECT * FROM "+ JobsProductsContract.JobsProducts.TABLE_NAME+")");
@@ -48,7 +49,7 @@ public class JobsProductsDBHelper  extends SQLiteOpenHelper {
 		
 		// fill table with saved data
 	*/
-	}
+//	}
 	
 	@Override
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

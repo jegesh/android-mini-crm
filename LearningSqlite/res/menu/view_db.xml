@@ -6,11 +6,13 @@
         android:orderInCategory="90"
         android:showAsAction="never"
         android:title="@string/menu_item_sort_order"/> 
+        <!--
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/> 
+        -->
     <item 
         android:id="@+id/search_for_record"
         android:orderInCategory="2"

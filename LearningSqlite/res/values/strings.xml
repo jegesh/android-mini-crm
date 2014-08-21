@@ -6,7 +6,8 @@
     <string name="save_button">Save</string>
     <string name="save_changes_button">Save Changes</string>
     <string name="cancel_button">Cancel</string>
-    <string name="delete_button">Delete Selected</string>
+    <string name="cab_menu_delete_button">Delete Selected</string>
+    <string name="menu_option_delete">Delete</string>
     <string name="add_record_button">New Record</string>
     <string name="view_db_button">View Database</string>
     <string name="app_name">Mini Business Manager</string>
@@ -21,26 +22,42 @@
     <string name="title_workers_main">Workers</string>
     <string name="title_suppliers_main">Suppliers</string>
     <string name="title_customers_main">Customers</string>
+    <string name="title_products_main">Products</string>
     <string name="archive_menu_item">Archive Record(s)</string>
     <string name="menu_item_search">Search</string>
     <string name="list_view_selecting_hint">Fast click opens record, long click selects</string>
-    <string name="empty_list_suggestion">Nothing here! Click on the plus sign to add a new record...</string>
+    <string name="empty_list_suggestion">Nothing here! Click on the plus sign to add a new record&#8230;</string>
 	<string name="menu_item_edit_record">Edit</string>
 	<string name="menu_item_call">Phone call</string>
 	<string name="menu_item_email">Send email</string>
 	<string name="deletion_menu_title">items selected</string>
 	<string name="deletion_confirmation_message">Are you sure you want to delete this record?</string>
 	<string name="deletion_affirmation_button">Yes!</string>
-	<string name="deletion_cancelation_button">No...</string>
+	<string name="deletion_cancelation_button">No&#8230;</string>
+	<string name="btn_confirm">OK</string>
+	<string name="btn_cancel">Cancel</string>
 	<string name="unavailable_feature_message">This feature is currently unavailable. Stay tuned for updates to the app!</string>
 	<string name="unavailable_feature_confirmation_button">OK</string>
 	<string name="menu_item_sort_order">Change sort order</string>
 	<string name="button_add_new_customer">Add customer</string>
 	<string name="record_saved_success_message">Record saved to database</string>
-    <string name="record_saved_failure_message">An error ocurred; record not saved</string>
+    <string name="record_saved_failure_message">An error occurred; record not saved</string>
     <string name="record_update_success_message">Database record updated successfully</string>
-    <string name="record_update_failure_message">An Error Ocurred; changes not saved</string>
+    <string name="record_update_failure_message">An error occurred; changes not saved</string>
 	<string name="button_edit_customer">Edit Customer Details</string>
+	<string name="button_add_new_worker">Add Worker</string>
+	<string name="button_add_new_product">Add Product</string>
+	<string name="button_accept_added_component">Accept Choice</string>
+	<string name="button_add_new_component_from_dialog">Create New</string>
+	<string name="domain_customers">customers</string>
+	<string name="domain_products">products</string>
+	<string name="domain_workers">workers</string>
+	<string name="message_no_phone_number">No phone number available</string>
+	<string name="message_no_products">No products available</string>
+	<string name="message_no_customers">No customers available</string>
+	<string name="message_no_workers">No workers available</string>
+	<string name="btn_hide_orders_member">Hide</string>
+	<string name="btn_show_orders_member">Show</string>
     
     <!-- individual domain strings -->
     <string name="title_activity_view_db"></string>
@@ -48,13 +65,23 @@
     <string name="title_activity_customers_new_record_form">New Customer</string>
     <string name="title_activity_order_edit">Edit Order</string>
     <string name="title_activity_customer_edit">Edit Customer Info</string>
+    <string name="title_workers_edit">Edit Worker Info</string>
+    <string name="title_workers_new_record">New Worker</string>
+    <string name="title_products_edit">Edit Product Info</string>
+    <string name="title_products_new_record">New Product</string>
+    <string-array name="workers_occupations">
+        <item >Employee</item>
+        <item>Subcontractor</item>
+        <item>Colleague</item>
+        <item >Other</item>
+    </string-array>
 
     <!-- form input hints -->
     <string name="order_title_hint">Title of the order</string>
     <string name="order_customer_hint">Who ordered?</string>
     <string name="order_customer_contact_hint">Contact man at company</string>
-    <string name="order_date_hint">Ordered on</string>
-    <string name="order_fill_by_date_hint">Fill by</string>
+    <string name="order_date_hint">Date of Order</string>
+    <string name="order_fill_by_date_hint">Fill order by?</string>
     <string name="order_address_hint">Where is the job?</string>
     <string name="order_details_hint">Order details</string>
     <string name="order_workers_on_job_hint">Who\'s with you on the job?</string>
@@ -66,18 +93,41 @@
     <string name="customer_address_hint">Customer Address</string>
     <string name="customer_contact_name_hint">Contact at customer\'s company</string>
     <string name="customer_contact_phone_hint">Contact\'s direct phone</string>
-    <string name="title_activity_display_record">a</string>
+    <string name="customer_details"><u>Customer Details</u></string>
+    <string name="title_phone_number_dialog">Which number to call?</string>
+    <string name="title_activity_display_record"></string>
+    <string name="workers_fname_hint">First Name</string>
+    <string name="workers_lname_hint">Last Name</string>
+    <string name="workers_phone1_hint">Main Phone</string>
+    <string name="workers_phone2_hint">Additional Phone</string>
+    <string name="workers_address_hint">Address</string>
+    <string name="workers_email_hint">Email</string>
+    <string name="workers_occupation_hint">Job/Position</string>
+    <string name="workers_relationship_hint">Relationship</string>
+    <string name="products_title_hint">Product Name</string>
+    <string name="products_subtitle_hint">Product Subtitle</string>
+    <string name="products_selling_unit_hint">Sale Unit</string>
+    <string name="products_unit_price_hint">Price per Unit</string>
+    <string name="products_notes_hint">Additional Info</string>
+    <string name="add_member_spinner_prompt">Pick One</string>
+    <string name="products_amount_hint">Quantity</string>
+    
 	<!-- display activity labels -->
 	<string name="label_order_customer_email">Email</string>
 	<string name="label_order_customer_phone1">Main Phone</string>
 	<string name="label_order_customer_phone2">Additional Phone</string>
-	<string name="label_order_date">Date of Order</string>
-	<string name="label_order_customer">Ordered by</string>
+	<string name="label_order_date_ordered">Ordered on:</string>
+	<string name="label_order_target_date">Fill by:</string>
+	<string name="label_order_customer_title">Ordered by</string>
 	<string name="label_order_customer_contact">Customer Agent</string>
+	<string name="label_order_customer_contact_phone">Customer Agent Direct Phone</string>
 	<string name="label_order_address">Order Location</string>
 	<string name="label_order_details">Order Details</string>
 	<string name="label_order_workers_on_job">Working on this order</string>
 	<string name="label_first_name">First Name</string>
 	<string name="label_last_name">Last Name</string>
+	<string name="label_customer_info">Customer Details</string>
+	<string name="label_product_info">Products in order</string>
+	<string name="label_workers_info">Workers on job</string>
 	
 </resources>

@@ -1,53 +1,35 @@
 package com.example.learningsqlite;
 
 import java.util.ArrayList;
-
-import com.example.learningsqlite.ConfirmDeletionDialog.NoticeDialogListener;
-
-//import com.example.learningsqlite.CustomersContract.Users;
-
-import android.R.color;
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.LauncherActivity.ListItem;
 import android.app.ListActivity;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.app.LoaderManager;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Build;
+
+import com.example.learningsqlite.ConfirmDeletionDialog.NoticeDialogListener;
+import com.example.learningsqlite.ProductsContract.Products;
+import com.example.learningsqlite.WorkersContract.Workers;
 
 public class ViewDbActivity extends ListActivity implements NoticeDialogListener {
 	private static final String UNAVAILABLE_FEATURE = "unavailable";
@@ -62,7 +44,6 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	private String orderByField;
 	private SQLiteOpenHelper currentDBHelper;
 	private SQLiteDatabase currentDb;
-	private Class tableClass;
 	private String[] fields;
 	private SimpleCursorAdapter mAdapter;
 	private Cursor c;
@@ -71,12 +52,13 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	private int[] txtViews;
 	private int searchFieldIndex;
 	private String matchString;
+	private ArrayList<Integer> checkedItems;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_db);
-		
+		checkedItems = new ArrayList<>();
 		
 	}
 	
@@ -91,9 +73,12 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			domain = DbConstants.currentDomain;
 		}
 	//	Log.d(TAG, "In onCreate");
+		
+		
 		setVars(domain);
-		if(getIntent().hasExtra(MATCH_STRING_FOR_SEARCH))
+		if(getIntent().hasExtra(MATCH_STRING_FOR_SEARCH)){
 			makeSearchQuery();
+		}
 		else
 			makeGeneralQuery();
 		refreshDisplay(this);
@@ -112,7 +97,12 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
         root.addView(progressBar);
 		
 		*/
-		super.onResume();
+		super.onResume();/*
+		if(	currentDb.isDatabaseIntegrityOk() && !currentDb.isDbLockedByCurrentThread() && !currentDb.inTransaction())
+				Toast.makeText(this, "Everything's OK", Toast.LENGTH_SHORT).show();
+		else
+			Toast.makeText(this	,"Problem!"		, Toast.LENGTH_SHORT).show();
+			*/
 	}
 	
 	
@@ -123,7 +113,6 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			fields  = new String[3];
 			currentDBHelper = new OrdersDBHelper(this);
 	//		currentDb = currentDBHelper.getWritableDatabase();
-			tableClass = OrdersContract.Orders.class;
 			fields[0] = OrdersContract.Orders._ID;
 			fields[1] = OrdersContract.Orders.COLUMN_NAME_TITLE;
 			fields[2] = OrdersContract.Orders.COLUMN_NAME_ORDER_DATE;
@@ -138,7 +127,6 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			fields  = new String[4];
 			currentDBHelper = new CustomersDBHelper(this);
 //			currentDb = currentDBHelper.getWritableDatabase();
-			tableClass = CustomersContract.Customers.class;
 			fields[0] = CustomersContract.Customers._ID;
 			fields[1] = CustomersContract.Customers.COLUMN_NAME_FIRST_NAME;
 			fields[2] = CustomersContract.Customers.COLUMN_NAME_LAST_NAME;
@@ -150,15 +138,52 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			txtViews = DbConstants.listItemFields2;
 			searchFieldIndex = 2;
 			break;
-		
+		case DbConstants.WORKERS:
+			fields = new String[4];
+			currentDBHelper = new WorkersDBHelper(this);
+			fields[0] = Workers._ID;
+			fields[1] = Workers.COLUMN_NAME_FIRST_NAME;
+			fields[2] = Workers.COLUMN_NAME_LAST_NAME;
+			fields[3] = Workers.COLUMN_NAME_OCCUPATION;
+			tableName = Workers.TABLE_NAME;
+			orderByField = Workers.COLUMN_NAME_LAST_NAME;
+			title = getString(R.string.title_workers_main);
+			listItemLayout = R.layout.main_screen_listview_item_2;
+			txtViews = DbConstants.listItemFields2;
+			searchFieldIndex = 2;
+			break;
+		case DbConstants.PRODUCTS:
+			fields  = new String[4];
+			currentDBHelper = new ProductsDBHelper(this);
+			fields[0] = Products._ID;
+			fields[1] = Products.COLUMN_NAME_TITLE;
+			fields[2] = Products.COLUMN_NAME_SUBTITLE;
+			fields[3] = Products.COLUMN_NAME_PRICE_PER_UNIT;
+			tableName = Products.TABLE_NAME;
+			orderByField = Products.COLUMN_NAME_TITLE;
+			title = getString(R.string.title_products_main);
+			listItemLayout = R.layout.main_screen_listview_item_1;
+			txtViews = DbConstants.listItemFields1;
+			searchFieldIndex = 1;
+			break;
 		
 		default:
 			fields = new String[1];
 			break;
 		}
-		currentDb = currentDBHelper.getWritableDatabase();
-		
+		currentDb = currentDBHelper.getReadableDatabase();
+	//	currentDBHelper.close();
 
+	}
+	
+	@Override
+	protected void onPause() {
+		currentDb.close();
+		if(c!=null && !c.isClosed())
+			c.close();
+		if(currentDBHelper!=null)
+			currentDBHelper.close();
+		super.onPause();
 	}
 	
 	private void prepareAutoComplete(){
@@ -168,6 +193,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			searchArray[i] = mAdapter.getCursor().getString(searchFieldIndex);
 			mAdapter.getCursor().moveToNext();
 		}
+		mAdapter.getCursor().close();
 		ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line,searchArray );
 		AutoCompleteTextView auto = (AutoCompleteTextView)findViewById(R.id.search_box);
 		auto.setThreshold(1);
@@ -197,8 +223,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	
 	private void makeGeneralQuery(){
 		try {
-		//	c = currentDb.query(tableName, fields, null, null, null, null, null );// orderByField
-			c = currentDb.query(tableName, null, null, null, null, null, null );// orderByField
+			c = currentDb.query(tableName, fields, null, null, null, null, orderByField );
 			Log.d(TAG, "No of columns: "+Integer.toString(c.getColumnCount()));
 			Log.d(TAG, "No of rows: "+Integer.toString(c.getCount()));
 	/*		for(int i = 0;i<c.getColumnCount();i++)
@@ -244,7 +269,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 		if(getDbCursor()){
 			Log.d(TAG, "Cursor initialized");
 		ListView mainListView = getListView();
-	  	mainListView.setAdapter(mAdapter);
+		mainListView.setAdapter(mAdapter);
 		mainListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		mainListView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 			
@@ -256,8 +281,10 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
-				
-				
+				// turn all selected items back to default color
+				for(int i = 0;i<checkedItems.size();i++)
+					getListView().getChildAt(checkedItems.get(i)).setBackgroundColor(getResources().getColor(android.R.color.white));
+				checkedItems.clear();
 			}
 			
 			@Override
@@ -292,6 +319,15 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 				String selected = Integer.toString( getListView().getCheckedItemCount());
 				Log.d(TAG, "no of items: "+selected);
 				mode.setTitle(selected + " "+ getString(R.string.deletion_menu_title));
+				if(checked){
+					checkedItems.add(position);
+					getListView().getChildAt(position).setBackgroundColor(Color.LTGRAY);
+				}
+				else{
+					getListView().getChildAt(position).setBackgroundColor(getResources().getColor(android.R.color.white));
+					checkedItems.remove(checkedItems.indexOf(position));
+				}
+					
 			/*	View clickedItem = null;
 				try{
 				clickedItem = getListAdapter().getView(position, getCurrentFocus(), getListView());
@@ -309,6 +345,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				c.moveToPosition(position);
 				String recId = c.getString(0);
+				c.close();
 				Intent intent = new Intent(view.getContext(), DisplayRecordActivity.class);
 				intent.putExtra(DOMAIN, DbConstants.currentDomain);
 				intent.putExtra(RECORD_ID, recId);
@@ -376,101 +413,58 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	
 	@Override
 	protected void onDestroy() {
-		currentDb.close();
-		currentDBHelper.close();
-		if(c!=null)
-			c.close();
+		
 		super.onDestroy();
 	}
-
-
-	private void setLocalLayout(Cursor c){
-		
-	//	android.view.ViewGroup.LayoutParams textLayParams = new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-/*		LinearLayout main = (LinearLayout)findViewById(R.id.view_db_container);
-		Log.d(TAG, "Before...");
-		if(c.moveToFirst()){
-			ListView lView = new ListView(this);
-			for(int i=0;i<c.getCount();i++){
-				String row="";
-				for(int j=1;j<fields.length;j++){
-					
-					row += c.getString(c.getColumnIndexOrThrow(fields[j]))+" "; 
-				}/*
-				row[0] = Long.toString(c.getLong(c.getColumnIndexOrThrow(Users._ID)));
-				row[1] = c.getString(c.getColumnIndexOrThrow(Users.COLUMN_NAME_USERNAME));
-				row[2] = c.getString(c.getColumnIndexOrThrow(Users.COLUMN_NAME_PASSWORD));
-				row[3] = c.getString(c.getColumnIndexOrThrow(Users.COLUMN_NAME_EMAIL));*/
-			/*	LinearLayout llRow = new LinearLayout(this);
-				LayoutParams llRowLayParams = new LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-				llRow.setOrientation(LinearLayout.HORIZONTAL);
-				llRow.setLayoutParams(llRowLayParams);
-				int llId = MainActivity.generateViewId();
-				llRow.setId(llId);
-				
-				
-				
-				TextView txt = new TextView(this);
-				txt.setText(row);
-				CheckBox check = new CheckBox(this);
-				check.setOnClickListener(getCheckboxListener());
-				int checkId = MainActivity.generateViewId();
-				check.setId(checkId);
-				check.setTag(c.getString(c.getColumnIndexOrThrow(fields[0])));
-	//			lView.add//	llRow.addView(check);
-//				llRow.addView(txt); 
-				
-				main.addView(llRow, llRowLayParams);
-				c.moveToNext();
-			}
-		}*/
-	//	c.close();
+	
+	@Override
+	protected void onStop() {
+		//currentDb.close();
+		/*
+		if(currentDBHelper!=null)
+			currentDBHelper.close();
+		if(c!=null && !c.isClosed())
+			c.close();
+		*/
+		super.onStop();
 	}
-
-
 
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		try {
+			// TODO redo following code using new checkedItems data field
 			SparseBooleanArray a = (getListView().getCheckedItemPositions());
-			for(int i = 0; i < mAdapter.getCount(); i++){
-				if(a.get(i)){	
-					mAdapter.getCursor().moveToPosition(i);
+			for(int i = 0; i < checkedItems.size(); i++){
+					mAdapter.getCursor().moveToPosition(checkedItems.get(i));
 					String recId = mAdapter.getCursor().getString(0);
-		//			checkedRecordsById.add(mAdapter.getCursor().getString(0));
-					currentDb.beginTransaction();
+				//	currentDb.beginTransaction();
 					   try {
 						   String[] params = {recId};
 							 int rowsDeleted = currentDb.delete(tableName,  fields[0]+" = ?", params);
 							 Log.d(TAG,Integer.toString(rowsDeleted));
-						     currentDb.setTransactionSuccessful();
+					//	     currentDb.setTransactionSuccessful();
 					   }catch(Exception e){
 						   Log.d(TAG, e.getMessage());
 						   
 					   }
 					   finally {
-					     currentDb.endTransaction();
+			//		     currentDb.endTransaction();
 					   }
+					   mAdapter.getCursor().close();
 				}	
-			}
 			
 		} catch (Exception e) {
 			Log.d(TAG, e.getMessage());
 		}
-		
-		Log.d(TAG, "Before refresh");
+		// probably not the right way to do this, but works for now
 		Intent intent = new Intent(getBaseContext(), ViewDbActivity.class);
 		startActivity(intent);
-		
+		finish();
 	}
-
-
 
 	@Override
 	public void onDialogNegativeClick(DialogFragment dialog) {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
-	
 
 }

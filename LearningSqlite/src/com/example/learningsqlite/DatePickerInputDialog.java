@@ -14,8 +14,8 @@ import android.widget.DatePicker;
 public class DatePickerInputDialog extends DialogFragment
 implements DatePickerDialog.OnDateSetListener {
 	 public interface NoticeDatePickerDialogListener {
-	        public void onDialogPositiveClick(DialogFragment dialog);
-	        public void onDialogNegativeClick(DialogFragment dialog);
+	        public void onDateDialogPositiveClick(DialogFragment dialog);
+	        public void onDateDialogNegativeClick(DialogFragment dialog);
 	    }
 	    
 	    // Use this instance of the interface to deliver action events
@@ -53,6 +53,6 @@ implements DatePickerDialog.OnDateSetListener {
 		int[] dateValues = {day, month, year};
 		// this is imho an ugly and bad implementation, but it'll work for now. I guess...
 		DbConstants.lastPickedDate = dateValues;
-		mListener.onDialogPositiveClick(this);
+		mListener.onDateDialogPositiveClick(this);
 	}
 }

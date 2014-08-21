@@ -11,8 +11,8 @@ public class JobsProductsContract {
 		public static final String _ID = "_id";
 		private static final String TEXT_TYPE = "TEXT";
 		private static final String COMMA_SEPARATOR = ",";
-		public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + _ID + " INTEGER PRIMARY KEY, "+ COLUMN_NAME_ORDERS_ID + 
-				" " + TEXT_TYPE + COMMA_SEPARATOR + COLUMN_NAME_PRODUCTS_ID +" " +TEXT_TYPE+");";
+		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" + _ID + " INTEGER PRIMARY KEY, "+ COLUMN_NAME_ORDERS_ID + 
+				" " + TEXT_TYPE + COMMA_SEPARATOR + COLUMN_NAME_PRODUCTS_ID +" " +TEXT_TYPE+ COMMA_SEPARATOR + COLUMN_NAME_AMOUNT +" " +TEXT_TYPE+");";
 		public static final String  SQL_DELETE_TABLE = "DROP TABLE IF EXISTS "+ TABLE_NAME;
 	}
 

@@ -10,6 +10,7 @@ import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.os.Build;
 
 public class MainActivity extends Activity {
@@ -48,15 +50,30 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		
+		instantiateDbTables();
 	}
 
+	private void instantiateDbTables(){
+		AsyncTask<String, Integer, String> task = new AsyncTask<String, Integer, String>() {
+			
+			@Override
+			protected String doInBackground(String... arg0) {
+				SQLiteDatabase db = new GeneralDbHelper(getBaseContext()).getReadableDatabase();
+				db.close();
+				return null;
+			}
+		};
+		
+		task.execute(null,null,null);
+		
+		
+		
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+	//	getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -71,30 +88,10 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	/*
-	public void makeDb(View view){
-		UsersDBHelper usersDB = new UsersDBHelper(this);
-		SQLiteDatabase db = usersDB.getWritableDatabase();
-		
-		ContentValues values = new ContentValues();
-		EditText user = (EditText)findViewById(R.id.user_name);
-		String userContent = user.getText().toString();
-		values.put(Users.COLUMN_NAME_USERNAME, userContent);
-		EditText pass = (EditText)findViewById(R.id.email);
-		String passContent = pass.getText().toString();
-		values.put(Users.COLUMN_NAME_PASSWORD, passContent);
-		EditText email = (EditText)findViewById(R.id.password);
-		String emailContent = email.getText().toString();
-		values.put(Users.COLUMN_NAME_EMAIL, emailContent);
-		long newRowId = db.insert(Users.TABLE_NAME, null, values);
-		Intent intent = new Intent(this, ViewDbActivity.class);
-		startActivity(intent);
-
-	}*/
+	
 	
 	public void viewDb(View view){
 		Intent intent = new Intent(this, ViewDbActivity.class);
-	//	String[] dbInfoArray;
 		String domain = (String) view.getTag();
 	//	Log.d(TAG, domain);
 				
@@ -102,21 +99,5 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
-		}
-	}
-
+	
 }

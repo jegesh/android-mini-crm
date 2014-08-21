@@ -13,9 +13,13 @@ public class ProductsContract {
 		public static final String _ID = "_id";
 		private static final String TEXT_TYPE = "TEXT";
 		private static final String COMMA_SEPARATOR = ",";
-		public static final String SQL_CREATE_TABLE = "CREATE TABLE " + ProductsContract.Products.TABLE_NAME + "(" + _ID + " INTEGER PRIMARY KEY, "+ COLUMN_NAME_TITLE + 
-				" " + TEXT_TYPE + COMMA_SEPARATOR + COLUMN_NAME_SUBTITLE +" " +TEXT_TYPE+COMMA_SEPARATOR+COLUMN_NAME_SELL_BY_UNIT +" " +TEXT_TYPE+COMMA_SEPARATOR
-				+COLUMN_NAME_PRICE_PER_UNIT +" " +TEXT_TYPE+COMMA_SEPARATOR+COLUMN_NAME_NOTES +" " +TEXT_TYPE+");";
+		public static final String SQL_CREATE_TABLE = 
+				"CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" + _ID + " INTEGER PRIMARY KEY, "+ 
+						COLUMN_NAME_TITLE +	" " + TEXT_TYPE + COMMA_SEPARATOR + 
+						COLUMN_NAME_SUBTITLE +" " +TEXT_TYPE+COMMA_SEPARATOR+
+						COLUMN_NAME_SELL_BY_UNIT +" " +TEXT_TYPE+COMMA_SEPARATOR+
+						COLUMN_NAME_PRICE_PER_UNIT +" " +TEXT_TYPE+COMMA_SEPARATOR+
+						COLUMN_NAME_NOTES +" " +TEXT_TYPE+");";
 		public static final String  SQL_DELETE_TABLE = "DROP TABLE IF EXISTS "+ TABLE_NAME;
 	}
 }
