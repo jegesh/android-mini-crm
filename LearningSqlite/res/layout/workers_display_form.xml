@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp" >
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_fname_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView 
+	    android:id="@+id/workers_first_name"
+	    style="@style/DisplayContent"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_lname_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_last_name"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_phone1_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_phone1"
+	    
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_phone2_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_phone2"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_email_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_email"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_address_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_address"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_occupation_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_occupation"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/workers_relationship_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/workers_relationship"
+	    />
+</LinearLayout>
+</ScrollView>

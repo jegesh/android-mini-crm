@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="vertical" >
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView android:id="@+id/titleText1"
+            style="@style/ListItemHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/titleText2"
+            style="@style/ListItemHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <TextView android:id="@+id/subtitle"
+        style="@style/ListItemSubheader"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>
+-->
+
+
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:id="@android:id/text1"
+    style="?android:attr/spinnerDropDownItemStyle"
+    android:singleLine="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="marquee"
+    android:textSize="22sp"
+    android:padding="6dp"
+    android:textAlignment="inherit"/>

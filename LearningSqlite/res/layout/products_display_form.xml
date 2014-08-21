@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- 
+TODO make spinners for product title, subtitle, and sale unit
+ -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp" >
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_title_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView 
+	    android:id="@+id/products_content_title"
+	    style="@style/FormInputs"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_subtitle_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/products_content_subtitle"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_unit_price_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/products_content_unit_price"
+	    
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_selling_unit_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/products_content_sale_unit"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_notes_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/DisplayContent"
+	    android:id="@+id/products_content_notes"
+	    />
+    <LinearLayout android:id="@+id/products_amount_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_amount_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/products_display_amount"
+	    />
+    </LinearLayout>
+
+</LinearLayout>
+</ScrollView>
