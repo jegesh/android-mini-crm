@@ -3,7 +3,7 @@
     style="@android:style/Widget.ListView.White"
     android:orientation="vertical"
     android:id="@+id/view_db_orders_list_item"
-    tools:context="com.example.learningsqlite.ViewDbActivity"
+    tools:context="net.gesher.minicrm.ViewDbActivity"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:padding="3dp"
