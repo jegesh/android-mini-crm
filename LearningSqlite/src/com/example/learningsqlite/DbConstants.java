@@ -30,6 +30,7 @@ public final class DbConstants {
 	
 	
 	public static final int[] listItemFields1 = {R.id.field_title,R.id.field_subtitle1,R.id.field_subtitle2};
+	public static final String CONTACTS = "Workers";
 	public static int[] listItemFields2 = {R.id.field_title1,R.id.field_title2,R.id.field_subtitle};
 	public static int[] listItemFields3 = {R.id.field_title, R.id.field_subtitle};
 	

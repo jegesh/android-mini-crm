@@ -20,16 +20,16 @@
         <activity
             android:name="com.example.learningsqlite.MainActivity"
             android:label="@string/app_name" >
+            
+        </activity>
+        <activity
+            android:name="com.example.learningsqlite.ViewDbActivity"
+            android:label="@string/title_activity_view_db">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.example.learningsqlite.ViewDbActivity"
-            android:label="@string/title_activity_view_db"
-            android:parentActivityName="com.example.learningsqlite.MainActivity" >
         </activity>
         <activity
             android:name="com.example.learningsqlite.InputFormActivity"

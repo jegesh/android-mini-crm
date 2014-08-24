@@ -58,6 +58,8 @@
 	<string name="message_no_workers">No workers available</string>
 	<string name="btn_hide_orders_member">Hide</string>
 	<string name="btn_show_orders_member">Show</string>
+	<string name="nav_drawer_open">Open</string>
+	<string name="nav_drawer_close">Close</string>
     
     <!-- individual domain strings -->
     <string name="title_activity_view_db"></string>
@@ -74,6 +76,16 @@
         <item>Subcontractor</item>
         <item>Colleague</item>
         <item >Other</item>
+    </string-array>
+    <string-array name="domain_list">
+        <item >Orders</item>
+        <item >Customers</item>
+        <item >Products</item>
+        <item >Workers</item>
+        <!--  
+        <item >Bids</item>
+        <item >Sales</item>
+        -->
     </string-array>
 
     <!-- form input hints -->

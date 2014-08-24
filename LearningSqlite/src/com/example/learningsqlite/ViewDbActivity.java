@@ -1,15 +1,19 @@
 package com.example.learningsqlite;
 
 import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -52,6 +56,9 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	private int[] txtViews;
 	private int searchFieldIndex;
 	private String matchString;
+	String domain = "";
+	DrawerLayout mDrawerLayout;
+	ActionBarDrawerToggle mDrawerToggle;
 	private ArrayList<Integer> checkedItems;
 	
 	@Override
@@ -59,20 +66,79 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_db);
 		checkedItems = new ArrayList<>();
-		
+		String[] mPlanetTitles = getResources().getStringArray(R.array.domain_list);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ListView mDrawerList = (ListView) findViewById(R.id.drawer_menu);
+
+        domain = "Orders";
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_drawer_list_item, mPlanetTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				
+				domain = ((TextView)view).getText().toString();
+				DbConstants.currentDomain = domain;
+				setVars(domain);
+		//		Toast.makeText(view.getContext(),"Domain: "+domain, Toast.LENGTH_SHORT).show();
+		//		Toast.makeText(view.getContext(), "Table: "+tableName, Toast.LENGTH_SHORT).show();
+				makeGeneralQuery();
+				refreshDisplay((Activity) view.getContext());
+				mDrawerLayout.closeDrawers();
+				
+			}
+
+        });
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.drawable.ic_drawer, R.string.nav_drawer_open, R.string.nav_drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+         //       getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+      //          getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 	}
 	
 	@Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+	
+	@Override
 	protected void onResume() {
-		String domain = "";
-		if(getIntent().hasExtra(MainActivity.DOMAIN)){
-			Bundle info = getIntent().getExtras();
-			domain = info.getString(MainActivity.DOMAIN);
+		DbConstants.currentDomain = domain;
+		/*
+		if(!domain.equals("")){
 			DbConstants.currentDomain = domain;
 		}else{
 			domain = DbConstants.currentDomain;
-		}
-	//	Log.d(TAG, "In onCreate");
+		}*/
+		Log.d(TAG, "In onResume");
 		
 		
 		setVars(domain);
@@ -383,6 +449,9 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+	          return true;
+	        }
 		switch (id) {
 		case R.id.action_settings:
 			return true;
