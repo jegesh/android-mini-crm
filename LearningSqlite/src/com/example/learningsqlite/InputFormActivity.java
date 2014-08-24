@@ -347,7 +347,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	//	togglerLayout.gravity = Gravity.RIGHT;
 		toggler.setLayoutParams(togglerLayout);
 		toggler.setText(R.string.btn_show_orders_member);
-		toggler.setTextSize(220);
+		toggler.setTextSize(22);
 		return toggler;
 	}
 
