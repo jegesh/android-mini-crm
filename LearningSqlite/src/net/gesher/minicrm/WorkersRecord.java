@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.gesher.minicrm.WorkersContract.Workers;
+import database_files.WorkersContract;
+import database_files.WorkersDBHelper;
+import database_files.WorkersContract.Workers;
+
 
 import android.app.Activity;
 import android.content.Context;

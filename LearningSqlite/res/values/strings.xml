@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="app_name">Mini Business Manager</string>
     <string name="hello_world">hi whirled</string>
+    
     <!-- main activity button and menu text -->
     <string name="save_button">Save</string>
     <string name="save_changes_button">Save Changes</string>
@@ -10,7 +12,7 @@
     <string name="menu_option_delete">Delete</string>
     <string name="add_record_button">New Record</string>
     <string name="view_db_button">View Database</string>
-    <string name="app_name">Mini Business Manager</string>
+    
     <string name="menu_suppliers_button">Suppliers/Subcontractors</string>
     <string name="menu_orders_button">Orders/Projects</string>
     <string name="menu_customers_button">Customers</string>
@@ -56,6 +58,9 @@
 	<string name="message_no_products">No products available</string>
 	<string name="message_no_customers">No customers available</string>
 	<string name="message_no_workers">No workers available</string>
+	<string name="message_customer_added">Customer Added</string>
+	<string name="message_worker_added">Worker Added</string>
+	<string name="message_product_added">Product added</string>
 	<string name="btn_hide_orders_member">Hide</string>
 	<string name="btn_show_orders_member">Show</string>
 	<string name="nav_drawer_open">Open</string>

@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/orders_edit_form_container"
-     >
+    android:padding="8dp" >
     
     
 	<EditText style="@style/FormInputs"
@@ -88,7 +88,6 @@
         android:tag="@string/domain_products"/>
     <LinearLayout 
         style="@android:style/ButtonBar"
-        android:id="@+id/customers_edit_form_button_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -97,7 +96,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:onClick="saveNew"/>
+            android:onClick="saveRecordToDb"/>
         <Button style="" 
             android:text="@string/cancel_button"
             android:layout_width="0dp"

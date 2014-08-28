@@ -2,6 +2,8 @@ package net.gesher.minicrm;
 
 import java.util.Calendar;
 
+import database_files.DbConstants;
+
 import net.gesher.minicrm.ConfirmDeletionDialog.NoticeDialogListener;
 
 

@@ -77,7 +77,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:onClick="saveNew"/>
+            android:onClick="saveRecordToDb"/>
         <Button android:text="@string/cancel_button"
             android:layout_width="0dp"
             android:layout_weight="1"

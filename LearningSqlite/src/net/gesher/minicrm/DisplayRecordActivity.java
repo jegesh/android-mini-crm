@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.gesher.minicrm.ConfirmDeletionDialog.NoticeDialogListener;
-import net.gesher.minicrm.CustomersContract.Customers;
-import net.gesher.minicrm.OrdersContract.Orders;
 import net.gesher.minicrm.PhonePickerFragment.PhoneDialogListener;
 
 import org.apache.http.protocol.HTTP;
 import org.xmlpull.v1.XmlPullParserException;
+
+import database_files.DbConstants;
+import database_files.CustomersContract.Customers;
+import database_files.OrdersContract.Orders;
 
 import android.app.Activity;
 import android.app.DialogFragment;

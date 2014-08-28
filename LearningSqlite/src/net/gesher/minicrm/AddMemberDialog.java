@@ -1,8 +1,11 @@
 package net.gesher.minicrm;
 
-import net.gesher.minicrm.CustomersContract.Customers;
-import net.gesher.minicrm.ProductsContract.Products;
-import net.gesher.minicrm.WorkersContract.Workers;
+import database_files.CustomersDBHelper;
+import database_files.ProductsDBHelper;
+import database_files.WorkersDBHelper;
+import database_files.CustomersContract.Customers;
+import database_files.ProductsContract.Products;
+import database_files.WorkersContract.Workers;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

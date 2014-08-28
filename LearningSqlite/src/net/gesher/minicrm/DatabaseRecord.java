@@ -65,7 +65,7 @@ public abstract class DatabaseRecord {
 		valueMap = new HashMap<String,String>();
     	for(Entry<Integer,String> e:inputIdsToColumns.entrySet()){
 
-    //		Log.d(TAG, "Entry key: "+e.getKey()+", Entry value: "+e.getValue());
+    		Log.d(TAG, "Entry key: "+e.getKey()+", Entry value: "+e.getValue());
 			EditText input = (EditText)(activity.findViewById(e.getKey()));
 	//		Log.d(TAG, "input's value: "+input.getText().toString());
 			String val = "";

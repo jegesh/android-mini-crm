@@ -1,9 +1,15 @@
 package net.gesher.minicrm;
 
+import java.util.LinkedList;
+
+import database_files.CustomersContract;
+import database_files.DbConstants;
+import database_files.OrdersContract;
+import database_files.ProductsContract.Products;
+import database_files.WorkersContract.Workers;
+
 import net.gesher.minicrm.AddMemberDialog.AddMemberDialogListener;
 import net.gesher.minicrm.DatePickerInputDialog.NoticeDatePickerDialogListener;
-import net.gesher.minicrm.ProductsContract.Products;
-import net.gesher.minicrm.WorkersContract.Workers;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.database.Cursor;
@@ -14,7 +20,9 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,9 +47,12 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	private int currentDateFieldId;
 	public String addedComponentDomain;
 	private LinearLayout custFrame;
-	private LinearLayout productsSuperFrame;
-	private LinearLayout workersSuperFrame;
+	private LinearLayout currentMemberSuperFrame;
 //	private String newRecordId;
+	private LinearLayout ordersFormContainer;
+	LinkedList<WorkersRecord> removedWorkers;
+	LinkedList<ProductsRecord> removedProducts;
+	private int workersHeaderId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +71,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 				setTitle(R.string.title_activity_orders_new_record);
 				record = new OrdersRecord(this);
 			}
+			
 			break;
 		case DbConstants.CUSTOMERS:
 			TABLE_NAME = CustomersContract.Customers.TABLE_NAME;
@@ -121,6 +133,12 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 
 	}
 	
+	@Override
+	protected void onResume() {
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		super.onResume();
+	}
+	
 	private ImageView getRemoveButton(){
 
 		ImageView removeButton = new ImageView(this);
@@ -135,179 +153,31 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	
 	public void populateFields(){
 		setContentView(layoutId);
+		if(record instanceof OrdersRecord)
+			ordersFormContainer = (LinearLayout)findViewById(R.id.orders_edit_form_container);
 		if(recId!=null){
 			switch (TABLE_NAME) {
 			// TODO factor out most of the code to uniform methods
 			case OrdersContract.Orders.TABLE_NAME:
-				//at the moment, no special code necessary
 				OrdersRecord ordersRec = (OrdersRecord)record;
 				ordersRec.populateInputFields(this);
 				
-				LinearLayout container = (LinearLayout)findViewById(R.id.orders_edit_form_container);
+				removedProducts = new LinkedList<>();
+				removedWorkers = new LinkedList<>();
+				
 				// special code for handling methods associated with special nested nature of orders records
 				if(ordersRec.customer!=null){
-					custFrame = (LinearLayout)findViewById(R.id.orders_customer_fragment_container);
-					getLayoutInflater().inflate(R.layout.layout_customer_input, custFrame);
-					LinearLayout custHeader = new LinearLayout(this);
-					custHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-					custHeader.setOrientation(LinearLayout.HORIZONTAL);
-					TextView frameTitle = new TextView(this);
-					LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
-					titleLp.weight = 1;
-					frameTitle.setLayoutParams(titleLp);
-					frameTitle.setText(R.string.label_customer_info);
-					frameTitle.setTextSize(24);
-					frameTitle.setTextColor(Color.BLUE);
-					int addinIndex = container.indexOfChild(custFrame);
-					custHeader.addView(frameTitle);
-					Button toggler = getToggleButton();
-					toggler.setOnClickListener(new View.OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							if(custFrame.getVisibility()==View.VISIBLE){
-								custFrame.setVisibility(View.GONE);
-								((Button)v).setText(R.string.btn_show_orders_member);
-							}else{
-								custFrame.setVisibility(View.VISIBLE);
-								((Button)v).setText(R.string.btn_hide_orders_member);
-							}
-							
-						}
-					});
-					custHeader.addView(toggler);
-					container.addView(custHeader, addinIndex);
-		//			custFrame.findViewById(R.id.customers_edit_form_button_bar).setVisibility(View.GONE);
-					findViewById(R.id.btn_add_customer).setVisibility(View.GONE);
-					ordersRec.customer.populateInputFields(this);
-					ImageView removeButton = getRemoveButton();
-					removeButton.setOnClickListener(new View.OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							((OrdersRecord)record).customer = null;
-							populateFields();
-						}
-					});
-					custFrame.addView(removeButton, 0);
-					custFrame.setVisibility(View.GONE);
+					addCustomerToForm(ordersRec);
 				}else{
 					// inflate other fragment with add customer button
 				}
 				if(ordersRec.products.size()>0){
-					productsSuperFrame = (LinearLayout)findViewById(R.id.orders_products_fragment_container);
-					LinearLayout prodHeader = new LinearLayout(this);
-					prodHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-					prodHeader.setOrientation(LinearLayout.HORIZONTAL);
-					TextView frameTitle = new TextView(this);
-					LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
-					titleLp.weight = 1;
-					frameTitle.setLayoutParams(titleLp);					
-					frameTitle.setText(R.string.label_product_info);
-					frameTitle.setTextSize(24);
-					frameTitle.setTextColor(Color.BLUE);
-					int addinIndex = container.indexOfChild(productsSuperFrame);
-					prodHeader.addView(frameTitle);
-					Button toggler = getToggleButton();
-					toggler.setOnClickListener(new View.OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							if(productsSuperFrame.getVisibility()==View.VISIBLE){
-								productsSuperFrame.setVisibility(View.GONE);
-								((Button)v).setText(R.string.btn_show_orders_member);
-							}else{
-								productsSuperFrame.setVisibility(View.VISIBLE);
-								((Button)v).setText(R.string.btn_hide_orders_member);
-							}
-							
-						}
-					});
-					prodHeader.addView(toggler);
-					container.addView(prodHeader, addinIndex);
-					for(int i = 0;i<ordersRec.products.size();i++){
-						LinearLayout singleProductFrame = new LinearLayout(this);
-						LayoutParams singleFrameLayParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-						singleProductFrame.setLayoutParams(singleFrameLayParams);
-						singleProductFrame.setOrientation(LinearLayout.VERTICAL);
-						productsSuperFrame.addView(singleProductFrame);
-						getLayoutInflater().inflate(R.layout.products_input_form, singleProductFrame);
-						singleProductFrame.findViewById(R.id.products_edit_form_button_bar).setVisibility(View.GONE);
-						singleProductFrame.findViewById(R.id.products_amount_container).setVisibility(View.VISIBLE);
-						ordersRec.products.get(i).populateInputFields(singleProductFrame);
-						ImageView removeButton = getRemoveButton();
-						removeButton.setOnClickListener(new View.OnClickListener() {
-							
-							@Override
-							public void onClick(View v) {
-								Integer listIndex = (Integer) v.getTag();
-								((OrdersRecord)record).products.remove(listIndex.intValue());
-								populateFields();
-								
-							}
-						});
-						removeButton.setTag(Integer.valueOf(i));
-						singleProductFrame.addView(removeButton, 0);
-					}
-					productsSuperFrame.setVisibility(View.GONE);
+					addProductsToForm(ordersRec);
 				}else{
 					// inflate other fragment with add product button
 				}
 				if(ordersRec.workers.size()>0){
-					workersSuperFrame = (LinearLayout)findViewById(R.id.orders_workers_fragment_container);
-					LinearLayout workHeader = new LinearLayout(this);
-					workHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-					workHeader.setOrientation(LinearLayout.HORIZONTAL);
-					TextView frameTitle = new TextView(this);
-					LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
-					titleLp.weight = 1;
-					frameTitle.setLayoutParams(titleLp);
-					frameTitle.setText(R.string.label_workers_info);
-					frameTitle.setTextSize(24);
-					frameTitle.setTextColor(Color.BLUE);
-					int addinIndex = container.indexOfChild(workersSuperFrame);
-					workHeader.addView(frameTitle);
-					Button toggler = getToggleButton();
-					toggler.setOnClickListener(new View.OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							if(workersSuperFrame.getVisibility()==View.VISIBLE){
-								workersSuperFrame.setVisibility(View.GONE);
-								((Button)v).setText(R.string.btn_show_orders_member);
-							}else{
-								workersSuperFrame.setVisibility(View.VISIBLE);
-								((Button)v).setText(R.string.btn_hide_orders_member);
-							}
-							
-						}
-					});
-					workHeader.addView(toggler);
-					container.addView(workHeader, addinIndex);
-					for(int i = 0;i<ordersRec.workers.size();i++){
-						LinearLayout singleWorkerFrame = new LinearLayout(this);
-						LayoutParams singleFrameLayParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-						singleWorkerFrame.setLayoutParams(singleFrameLayParams);
-						singleWorkerFrame.setOrientation(LinearLayout.VERTICAL);
-						workersSuperFrame.addView(singleWorkerFrame);
-						getLayoutInflater().inflate(R.layout.workers_input_form, singleWorkerFrame);
-						singleWorkerFrame.findViewById(R.id.workers_edit_form_button_bar).setVisibility(View.GONE);
-						ordersRec.workers.get(i).populateInputFields(singleWorkerFrame);
-						ImageView removeButton = getRemoveButton();
-						removeButton.setOnClickListener(new View.OnClickListener() {
-							
-							@Override
-							public void onClick(View v) {
-								Integer listIndex = (Integer) v.getTag();
-								((OrdersRecord)record).workers.remove(listIndex.intValue());
-								populateFields();
-								
-							}
-						});
-						removeButton.setTag(Integer.valueOf(i));
-						singleWorkerFrame.addView(removeButton, 0);
-					}
-					workersSuperFrame.setVisibility(View.GONE);
+					addWorkersToForm(ordersRec);
 				}else{
 					// inflate other fragment with add workers button
 				}
@@ -322,8 +192,201 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 			}
 			
 		}else{
-			record.populateInputFields(this);
+		//	record.populateInputFields(this);
 		}
+	}
+
+	void addWorkersToForm(OrdersRecord ordersRec) {
+		currentMemberSuperFrame = (LinearLayout)findViewById(R.id.orders_workers_fragment_container);
+		int addinIndex = ordersFormContainer.indexOfChild(currentMemberSuperFrame);
+		if(findViewById(workersHeaderId) == null){
+			LinearLayout workHeader = getMemberGroupHeader(currentMemberSuperFrame, R.string.label_workers_info);
+			workHeader.setId(ViewDbActivity.generateViewId());
+			workersHeaderId = workHeader.getId();
+			ordersFormContainer.addView(workHeader, addinIndex);
+		}else{ 
+			// TODO temp fix, please improve. currently removes all previously visible members, then adds them back in
+		//	int members = currentMemberSuperFrame.getChildCount();
+			currentMemberSuperFrame.removeAllViews();
+		}
+		
+		for(int i = 0;i<ordersRec.workers.size();i++){
+			LinearLayout singleWorkerFrame = new LinearLayout(this);
+			LayoutParams singleFrameLayParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			singleWorkerFrame.setLayoutParams(singleFrameLayParams);
+			singleWorkerFrame.setOrientation(LinearLayout.VERTICAL);
+			currentMemberSuperFrame.addView(singleWorkerFrame);
+			getLayoutInflater().inflate(R.layout.workers_input_form, singleWorkerFrame);
+			singleWorkerFrame.findViewById(R.id.workers_edit_form_button_bar).setVisibility(View.GONE);
+			ordersRec.workers.get(i).populateInputFields(singleWorkerFrame);
+			ImageView removeButton = getRemoveButton();
+			removeButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Integer listIndex = (Integer) v.getTag();
+					removedWorkers.add(((OrdersRecord)record).workers.get(listIndex.intValue()));
+					((OrdersRecord)record).workers.remove(listIndex.intValue());
+					populateFields();
+				}
+			});
+			removeButton.setTag(Integer.valueOf(i));
+			singleWorkerFrame.addView(removeButton, 0);
+		}
+		if(((ViewGroup)findViewById(workersHeaderId)).getChildAt(1) instanceof Button){
+			Button toggle = (Button)((ViewGroup)findViewById(workersHeaderId)).getChildAt(1);
+			toggleHideButtonText(toggle);
+		}
+		currentMemberSuperFrame.setVisibility(View.GONE);
+	}
+
+	private LinearLayout getMemberGroupHeader(ViewGroup parent, int titleId) {
+		LinearLayout groupHeader = new LinearLayout(this);
+		groupHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		groupHeader.setOrientation(LinearLayout.HORIZONTAL);
+		TextView frameTitle = new TextView(this);
+		LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
+		titleLp.weight = 1;
+		frameTitle.setLayoutParams(titleLp);
+		frameTitle.setText(titleId);
+		frameTitle.setTextSize(24);
+		frameTitle.setTextColor(Color.BLUE);
+		groupHeader.addView(frameTitle);
+		Button toggler = getToggleButton();
+		toggler.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) { // TODO make this general! i.e. local variable instead of workersSuperFrame
+				if(currentMemberSuperFrame.getVisibility()==View.VISIBLE){
+					currentMemberSuperFrame.setVisibility(View.GONE);
+					toggleHideButtonText((Button)v);
+				}else{
+					currentMemberSuperFrame.setVisibility(View.VISIBLE);
+					toggleHideButtonText((Button)v);
+				}
+				
+			}
+		});
+		groupHeader.addView(toggler);
+		return groupHeader;
+	}
+
+	void toggleHideButtonText(Button b){
+		if(b.getText().toString().equals(getString(R.string.btn_hide_orders_member)))
+			b.setText(R.string.btn_show_orders_member);
+		else
+			b.setText(R.string.btn_hide_orders_member);
+	}
+	
+	private void addProductsToForm(OrdersRecord ordersRec) {
+	/*
+		productsSuperFrame = (LinearLayout)findViewById(R.id.orders_products_fragment_container);
+		LinearLayout prodHeader = new LinearLayout(this);
+		prodHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		prodHeader.setOrientation(LinearLayout.HORIZONTAL);
+		TextView frameTitle = new TextView(this);
+		LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
+		titleLp.weight = 1;
+		frameTitle.setLayoutParams(titleLp);					
+		frameTitle.setText(R.string.label_product_info);
+		frameTitle.setTextSize(24);
+		frameTitle.setTextColor(Color.BLUE);
+		int addinIndex = ordersFormContainer.indexOfChild(productsSuperFrame);
+		prodHeader.addView(frameTitle);
+		Button toggler = getToggleButton();
+		toggler.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(productsSuperFrame.getVisibility()==View.VISIBLE){
+					productsSuperFrame.setVisibility(View.GONE);
+					((Button)v).setText(R.string.btn_show_orders_member);
+				}else{
+					productsSuperFrame.setVisibility(View.VISIBLE);
+					((Button)v).setText(R.string.btn_hide_orders_member);
+				}
+				
+			}
+		});
+		prodHeader.addView(toggler);
+		ordersFormContainer.addView(prodHeader, addinIndex);
+		for(int i = 0;i<ordersRec.products.size();i++){
+			LinearLayout singleProductFrame = new LinearLayout(this);
+			LayoutParams singleFrameLayParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			singleProductFrame.setLayoutParams(singleFrameLayParams);
+			singleProductFrame.setOrientation(LinearLayout.VERTICAL);
+			productsSuperFrame.addView(singleProductFrame);
+			getLayoutInflater().inflate(R.layout.products_input_form, singleProductFrame);
+			singleProductFrame.findViewById(R.id.products_edit_form_button_bar).setVisibility(View.GONE);
+			singleProductFrame.findViewById(R.id.products_amount_container).setVisibility(View.VISIBLE);
+			ordersRec.products.get(i).populateInputFields(singleProductFrame);
+			ImageView removeButton = getRemoveButton();
+			removeButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Integer listIndex = (Integer) v.getTag();
+					removedProducts.add(((OrdersRecord)record).products.get(listIndex.intValue()));
+					((OrdersRecord)record).products.remove(listIndex.intValue());
+					populateFields();
+				}
+				
+			});
+			removeButton.setTag(Integer.valueOf(i));
+			singleProductFrame.addView(removeButton, 0);
+		}
+		productsSuperFrame.setVisibility(View.GONE);
+		*/
+	}
+	
+
+	void addCustomerToForm(OrdersRecord ordersRec) {
+		Log.d(TAG, "Customer is not null");
+		custFrame = (LinearLayout)findViewById(R.id.orders_customer_fragment_container);
+		getLayoutInflater().inflate(R.layout.layout_customer_input, custFrame);
+		custFrame.findViewById(R.id.customers_edit_form_button_bar).setVisibility(View.GONE);
+		LinearLayout custHeader = new LinearLayout(this);
+		custHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		custHeader.setOrientation(LinearLayout.HORIZONTAL);
+		TextView frameTitle = new TextView(this);
+		LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
+		titleLp.weight = 1;
+		frameTitle.setLayoutParams(titleLp);
+		frameTitle.setText(R.string.label_customer_info);
+		frameTitle.setTextSize(24);
+		frameTitle.setTextColor(Color.BLUE);
+		int addinIndex = ordersFormContainer.indexOfChild(custFrame);
+		custHeader.addView(frameTitle);
+		Button toggler = getToggleButton();
+		toggler.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(custFrame.getVisibility()==View.VISIBLE){
+					custFrame.setVisibility(View.GONE);
+					((Button)v).setText(R.string.btn_show_orders_member);
+				}else{
+					custFrame.setVisibility(View.VISIBLE);
+					((Button)v).setText(R.string.btn_hide_orders_member);
+				}
+				
+			}
+		});
+		custHeader.addView(toggler);
+		ordersFormContainer.addView(custHeader, addinIndex);
+		findViewById(R.id.btn_add_customer).setVisibility(View.GONE);
+		ordersRec.customer.populateInputFields(this);
+		ImageView removeButton = getRemoveButton();
+		removeButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				((OrdersRecord)record).customer = null;
+				populateFields();
+			}
+		});
+		custFrame.addView(removeButton, 0);
+		custFrame.setVisibility(View.GONE);
 	}
 	
 	public void addSaleUnit(View v){
@@ -382,7 +445,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	
 	
 	// 'save' button click method -- for saving inputed data to database as a new record (or updating) 
-	public void saveNew(View view) throws Exception {
+	public void saveRecordToDb(View view) throws Exception {
 		
 		Log.d(TAG, "table: "+TABLE_NAME);
 		if(record.recordId==null){
@@ -483,23 +546,31 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	@Override
 	public void onAddMemberAcceptClickListener() {
 	//	Toast.makeText(this, "record id: " + dialog.addedMemberId, Toast.LENGTH_SHORT).show();
+		OrdersRecord ordRec = (OrdersRecord)record;
 		switch (addedComponentDomain) {
 		case "customers":
 			CustomersRecord cust = new CustomersRecord(dialog.addedMemberId, this);
-			((OrdersRecord)record).customer = cust;
+			ordRec.customer = cust;
+			addCustomerToForm(ordRec);
+			Toast.makeText(this, getString(R.string.message_customer_added), Toast.LENGTH_SHORT).show();
 			break;
 		case "products":
 			ProductsRecord prod = new ProductsRecord(dialog.addedMemberId,this);
-			((OrdersRecord)record).products.add(prod);
+			ordRec.products.add(prod);
+			addProductsToForm(ordRec);
+			Toast.makeText(this, getString(R.string.message_product_added), Toast.LENGTH_SHORT).show();
 			break;
 		case "workers":
 			WorkersRecord work = new WorkersRecord(dialog.addedMemberId, this);
-			((OrdersRecord)record).workers.add(work);
+			ordRec.workers.add(work);
+			addWorkersToForm(ordRec);
+			Toast.makeText(this, getString(R.string.message_worker_added), Toast.LENGTH_SHORT).show();
 			break;
 		}
+		// in case orders record was edit, do this not to lose changes when repopulating fields
+	//	((OrdersRecord)record).saveBasicFieldsToObject(this);
 		
-		((OrdersRecord)record).saveBasicFieldsToObject(this);
-		populateFields();
+	//	populateFields();
 		addedComponentDomain = null;
 	}
 

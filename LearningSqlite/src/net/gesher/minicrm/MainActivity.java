@@ -2,6 +2,8 @@ package net.gesher.minicrm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import database_files.GeneralDbHelper;
+
 //import com.example.learningsqlite.CustomersContract.Users;
 
 import android.app.Activity;

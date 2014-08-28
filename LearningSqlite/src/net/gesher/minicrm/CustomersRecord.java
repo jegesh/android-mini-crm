@@ -2,7 +2,10 @@ package net.gesher.minicrm;
 
 import java.util.HashMap;
 
-import net.gesher.minicrm.CustomersContract.Customers;
+import database_files.CustomersContract;
+import database_files.CustomersDBHelper;
+import database_files.CustomersContract.Customers;
+
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;

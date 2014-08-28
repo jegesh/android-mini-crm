@@ -3,7 +3,10 @@ package net.gesher.minicrm;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.gesher.minicrm.ProductsContract.Products;
+import database_files.ProductsContract;
+import database_files.ProductsDBHelper;
+import database_files.ProductsContract.Products;
+
 
 import android.app.Activity;
 import android.content.Context;
@@ -59,7 +62,8 @@ public class ProductsRecord extends DatabaseRecord {
 			valueMap.put(e.getValue(), val);
     	}
     	Spinner sp = (Spinner)context.findViewById(R.id.products_input_sale_unit_spinner);
-    	valueMap.put(Products.COLUMN_NAME_SELL_BY_UNIT, (String) ((TextView)sp.getSelectedView()).getText());
+    	if(sp.getSelectedItem() != null)
+    		valueMap.put(Products.COLUMN_NAME_SELL_BY_UNIT, (String) ((TextView)sp.getSelectedView()).getText());
     	EditText amountInput = (EditText)context.findViewById(R.id.products_input_amount);
     	amount = amountInput.getText().toString();
     }

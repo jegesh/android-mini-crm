@@ -3,9 +3,18 @@ package net.gesher.minicrm;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import database_files.CustomersContract;
+import database_files.CustomersDBHelper;
+import database_files.DbConstants;
+import database_files.GeneralDbHelper;
+import database_files.OrdersContract;
+import database_files.OrdersDBHelper;
+import database_files.ProductsDBHelper;
+import database_files.WorkersDBHelper;
+import database_files.ProductsContract.Products;
+import database_files.WorkersContract.Workers;
+
 import net.gesher.minicrm.ConfirmDeletionDialog.NoticeDialogListener;
-import net.gesher.minicrm.ProductsContract.Products;
-import net.gesher.minicrm.WorkersContract.Workers;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -59,12 +68,15 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	private int[] txtViews;
 	private int searchFieldIndex;
 	private String matchString;
-	String domain = "";
+	String domain;
 	DrawerLayout mDrawerLayout;
 	ActionBarDrawerToggle mDrawerToggle;
 	private ArrayList<Integer> checkedItems;
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
+	// TODO research why this activity gets destroyed when the input form is opened -- not enough system resources? weird?
+	
+	
 	/**
 	 * Generate a value suitable for use in {@link #setId(int)}.
 	 * This value will not collide with ID values generated at build time by aapt for R.id.
@@ -98,20 +110,38 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 
 			task.execute(null,null,null);
 		}
+		
+		
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		if(savedInstanceState != null)
+			domain = savedInstanceState.getString("domain");
+		else{
+			if(DbConstants.currentDomain == null){
+				domain = "Orders";
+				SQLiteDatabase db = new GeneralDbHelper(getBaseContext()).getReadableDatabase();
+				db.close();
+			}else
+				domain = DbConstants.currentDomain;
+			
+		}
+		DbConstants.currentDomain = domain;
 		setContentView(R.layout.activity_view_db);
-		instantiateDbTables();
 		checkedItems = new ArrayList<>();
-		String[] mPlanetTitles = getResources().getStringArray(R.array.domain_list);
+		String[] domainTitles = getResources().getStringArray(R.array.domain_list);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView mDrawerList = (ListView) findViewById(R.id.drawer_menu);
-
-        domain = "Orders";
+        Log.d(TAG, "In onCreate, domain: "+domain);
+        
+        setVars();
+        makeGeneralQuery();
+        refreshDisplay(this);
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_drawer_list_item, mPlanetTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_drawer_list_item, domainTitles));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
 
@@ -120,16 +150,17 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 				
 				domain = ((TextView)view).getText().toString();
 				DbConstants.currentDomain = domain;
-				setVars(domain);
+				setVars();
 		//		Toast.makeText(view.getContext(),"Domain: "+domain, Toast.LENGTH_SHORT).show();
 		//		Toast.makeText(view.getContext(), "Table: "+tableName, Toast.LENGTH_SHORT).show();
 				makeGeneralQuery();
 				refreshDisplay((Activity) view.getContext());
 				mDrawerLayout.closeDrawers();
-				
+								
 			}
 
         });
+        
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.nav_drawer_open, R.string.nav_drawer_close) {
 
@@ -156,6 +187,13 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	}
 	
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putString("domain", domain);
+		super.onSaveInstanceState(outState);
+	}
+	
+	
+	@Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
@@ -180,13 +218,14 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 		Log.d(TAG, "In onResume");
 		
 		
-		setVars(domain);
+	//	setVars(domain);
 		if(getIntent().hasExtra(MATCH_STRING_FOR_SEARCH)){
 			makeSearchQuery();
+			refreshDisplay(this);
 		}
-		else
-			makeGeneralQuery();
-		refreshDisplay(this);
+//		else
+//			makeGeneralQuery();
+//		refreshDisplay(this);
 //		prepareAutoComplete();
 		
 		/*
@@ -212,7 +251,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	
 	
 	
-	private void setVars(String domain){
+	private void setVars(){
 		switch (domain) {
 		case DbConstants.ORDERS:
 			fields  = new String[3];
@@ -373,74 +412,75 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	private void renderLayout(){
 		if(getDbCursor()){
 			Log.d(TAG, "Cursor initialized");
-		ListView mainListView = getListView();
-		mainListView.setAdapter(mAdapter);
-		mainListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-		mainListView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
-			
-			@Override
-			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-				
-				return false;
-			}
-			
-			@Override
-			public void onDestroyActionMode(ActionMode mode) {
-				// turn all selected items back to default color
-				for(int i = 0;i<checkedItems.size();i++)
-					getListView().getChildAt(checkedItems.get(i)).setBackgroundColor(getResources().getColor(android.R.color.white));
-				checkedItems.clear();
-			}
-			
-			@Override
-			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				MenuInflater inflater = mode.getMenuInflater();
-		        inflater.inflate(R.menu.cab_menu, menu);
-		        return true;
-			}
-			
-			@Override
-			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-				switch (item.getItemId()) {
-				case R.id.menu_item_archive_record:
-					UnavailableFeatureDialog un = new UnavailableFeatureDialog();
-					un.show(getFragmentManager(), UNAVAILABLE_FEATURE);
+			ListView mainListView = getListView();
+
+			mainListView.setAdapter(mAdapter);
+			mainListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+			mainListView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+
+				@Override
+				public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+
+					return false;
+				}
+
+				@Override
+				public void onDestroyActionMode(ActionMode mode) {
+					// turn all selected items back to default color
+					for(int i = 0;i<checkedItems.size();i++)
+						getListView().getChildAt(checkedItems.get(i)).setBackgroundColor(getResources().getColor(android.R.color.white));
+					checkedItems.clear();
+				}
+
+				@Override
+				public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+					MenuInflater inflater = mode.getMenuInflater();
+					inflater.inflate(R.menu.cab_menu, menu);
 					return true;
-					
-				case R.id.menu_item_delete_record:
-					ConfirmDeletionDialog dialog = new ConfirmDeletionDialog();
-					dialog.show(getFragmentManager(), DisplayRecordActivity.DELETION_DIALOG_FRAG_TAG);
-					return true;
-				default:
-					break;
 				}
-				return false;
-				
-				
-			}
-			
-			@Override
-			public void onItemCheckedStateChanged(ActionMode mode, int position,long id, boolean checked) {
-				String selected = Integer.toString( getListView().getCheckedItemCount());
-				Log.d(TAG, "no of items: "+selected);
-				mode.setTitle(selected + " "+ getString(R.string.deletion_menu_title));
-				if(checked){
-					checkedItems.add(position);
-					getListView().getChildAt(position).setBackgroundColor(Color.LTGRAY);
+
+				@Override
+				public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+					switch (item.getItemId()) {
+					case R.id.menu_item_archive_record:
+						UnavailableFeatureDialog un = new UnavailableFeatureDialog();
+						un.show(getFragmentManager(), UNAVAILABLE_FEATURE);
+						return true;
+
+					case R.id.menu_item_delete_record:
+						ConfirmDeletionDialog dialog = new ConfirmDeletionDialog();
+						dialog.show(getFragmentManager(), DisplayRecordActivity.DELETION_DIALOG_FRAG_TAG);
+						return true;
+					default:
+						break;
+					}
+					return false;
+
+
 				}
-				else{
-					getListView().getChildAt(position).setBackgroundColor(getResources().getColor(android.R.color.white));
-					checkedItems.remove(checkedItems.indexOf(position));
-				}
-					
-			/*	View clickedItem = null;
+
+				@Override
+				public void onItemCheckedStateChanged(ActionMode mode, int position,long id, boolean checked) {
+					String selected = Integer.toString( getListView().getCheckedItemCount());
+					Log.d(TAG, "no of items: "+selected);
+					mode.setTitle(selected + " "+ getString(R.string.deletion_menu_title));
+					if(checked){
+						checkedItems.add(position);
+						getListView().getChildAt(position).setBackgroundColor(Color.LTGRAY);
+					}
+					else{
+						getListView().getChildAt(position).setBackgroundColor(getResources().getColor(android.R.color.white));
+						checkedItems.remove(checkedItems.indexOf(position));
+					}
+
+					/*	View clickedItem = null;
 				try{
 				clickedItem = getListAdapter().getView(position, getCurrentFocus(), getListView());
 				}catch(Exception e){
 					Log.d(TAG, e.getCause().toString());
 				}
 				clickedItem.setBackgroundColor(color.holo_green_light);*/
-			}
+				}
 		});
 		
 		// onclick function for single short click on list item
@@ -461,7 +501,8 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 
 	        	
 		Log.d(TAG, "After...");
-		}
+		}else
+			getListView().setAdapter(null);
 	}
 	/*
 	public void selectRecord(View view){
@@ -521,7 +562,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 	
 	@Override
 	protected void onDestroy() {
-		
+		Log.d(TAG, "Destroyed!");
 		super.onDestroy();
 	}
 	
