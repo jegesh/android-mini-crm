@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 public class WorkersRecord extends DatabaseRecord {
 	//public String recordId;
+	boolean newlyAdded;
 
 	
 	public WorkersRecord(Context activity){
@@ -29,6 +30,7 @@ public class WorkersRecord extends DatabaseRecord {
 		displayIdsToColumns = new HashMap<Integer, String>();
 		setInputIdsToColumns();
 		setDisplayIdsToColumns();
+		newlyAdded = false;
 	}
 	
 	public WorkersRecord(String id, Context activity){

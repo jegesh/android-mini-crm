@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 public class ProductsRecord extends DatabaseRecord {
 	String amount;
+	boolean newlyAdded;
 	
 	public ProductsRecord( Context activity){
 		super(ProductsContract.Products.TABLE_NAME,R.layout.products_input_form,R.layout.products_display_form,R.string.title_products_main); 
@@ -27,6 +28,7 @@ public class ProductsRecord extends DatabaseRecord {
 		displayIdsToColumns = new HashMap<Integer, String>();
 		setInputIdsToColumns();
 		setDisplayIdsToColumns();
+		newlyAdded = false;
 	}
 	
 	public ProductsRecord(String id, Context activity){

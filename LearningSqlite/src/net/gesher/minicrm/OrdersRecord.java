@@ -9,6 +9,8 @@ import database_files.OrdersDBHelper;
 import database_files.JobWorkersContract.JobWorkers;
 import database_files.JobsProductsContract.JobsProducts;
 import database_files.OrdersContract.Orders;
+import database_files.ProductsContract.Products;
+import database_files.WorkersContract.Workers;
 
 
 import android.app.Activity;
@@ -27,6 +29,8 @@ public class OrdersRecord extends DatabaseRecord {
 	public CustomersRecord customer;
 	public LinkedList<WorkersRecord> workers;
 	public LinkedList<ProductsRecord> products;
+	public LinkedList<WorkersRecord> removedWorkers;
+	public LinkedList<ProductsRecord> removedProducts;
 		
 	public OrdersRecord(String id, Context activity){
 		this(activity);
@@ -47,6 +51,8 @@ public class OrdersRecord extends DatabaseRecord {
 		
 		workers = new LinkedList<>();
 		products = new LinkedList<>();
+		removedProducts = new LinkedList<>();
+		removedWorkers = new LinkedList<>();
 	//	Toast.makeText(activity, "Done constructing", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -110,7 +116,7 @@ public class OrdersRecord extends DatabaseRecord {
 			LinearLayout workersContainer = (LinearLayout)activity.findViewById(R.id.orders_workers_fragment_container);
 			for(int i = 0;i<workersContainer.getChildCount();i++){
 				LinearLayout singleContainer = (LinearLayout)workersContainer.getChildAt(i);
-				workers.get(i).saveDataToObject(singleContainer);
+				((WorkersRecord)workers.get(i)).saveDataToObject(singleContainer);
 			}
 		}
 	}
@@ -127,6 +133,7 @@ public class OrdersRecord extends DatabaseRecord {
 		if(!valueMap.values().isEmpty()){
 			try {
 				//TODO handle nested record saving errors, e.g. if the custRec doesn't save successfully but the order does, display a message
+				
 				// step 1: customer record
 				updateCustomer();
 				Log.d(TAG, "step 1");
@@ -135,7 +142,7 @@ public class OrdersRecord extends DatabaseRecord {
 				ContentValues cv = DatabaseRecord.mapValuesToCV(valueMap);
 				recordId = Integer.toString((int)db.insert(tableName, null, cv));
 				Log.d(TAG, "step 2");
-				// step 3a: workers
+				// step 3: update member records
 				updateMembers();
 			} catch (Exception e) {
 				Log.d(TAG, "Error inserting new record: "+e.getMessage());
@@ -159,13 +166,18 @@ public class OrdersRecord extends DatabaseRecord {
 	}
 
 	void updateMembers() {
+		// step 3a: workers
 		if(workers.size()>0)
 			for(int i = 0;i<workers.size();i++){
-				WorkersRecord w = workers.get(i);
-				if(w.recordId!=null)
+				WorkersRecord w = (WorkersRecord)workers.get(i);
+				if(w.recordId!=null){
+					Log.d(TAG, "Worker update, id: "+w.recordId);
 					w.updateRecord(w.valueMap);
-				else
+				}
+				else{
 					w.insertNewRecord();
+					Log.d(TAG, "Worker insertion, id: "+w.recordId);
+				}
 			}
 		// step 3b: products
 		if(products.size()>0)
@@ -179,24 +191,40 @@ public class OrdersRecord extends DatabaseRecord {
 		
 		// step 4: commit associations to db
 		for(int i = 0;i<workers.size();i++){
-			ContentValues wCV = new ContentValues();
-			wCV.put(JobWorkers.COLUMN_NAME_ORDERS_ID, this.recordId);
-			wCV.put(JobWorkers.COLUMN_NAME_WORKERS_ID, workers.get(i).recordId);
-			db.insert(JobWorkersContract.JobWorkers.TABLE_NAME, null, wCV);
+			if(((WorkersRecord)workers.get(i)).newlyAdded){
+				ContentValues wCV = new ContentValues();
+				wCV.put(JobWorkers.COLUMN_NAME_ORDERS_ID, this.recordId);
+				wCV.put(JobWorkers.COLUMN_NAME_WORKERS_ID, workers.get(i).recordId);
+				db.insert(JobWorkersContract.JobWorkers.TABLE_NAME, null, wCV);
+			}
 		}
 		for(int i = 0;i<products.size();i++){
-			ContentValues pCV = new ContentValues();
-			pCV.put(JobsProducts.COLUMN_NAME_ORDERS_ID, this.recordId);
-			pCV.put(JobsProducts.COLUMN_NAME_PRODUCTS_ID, products.get(i).recordId);
-			pCV.put(JobsProducts.COLUMN_NAME_AMOUNT, products.get(i).amount);
+			if(products.get(i).newlyAdded){
+				ContentValues pCV = new ContentValues();
+				pCV.put(JobsProducts.COLUMN_NAME_ORDERS_ID, this.recordId);
+				pCV.put(JobsProducts.COLUMN_NAME_PRODUCTS_ID, products.get(i).recordId);
+				pCV.put(JobsProducts.COLUMN_NAME_AMOUNT, products.get(i).amount);
+			}
 		}
 		
 		// step 5: remove disassociated subrecords from db
-		// TODO do it
+		removeDisassociatedMembers();
 	}
 	
 	private void removeDisassociatedMembers(){
-		
+		if(removedProducts.size()>0){
+			for(int i = 0;i<removedProducts.size();i++){
+				String deletionId = removedProducts.get(i).recordId;
+				db.delete(Products.TABLE_NAME, Products._ID + " = ?", new String[]{deletionId});
+			}
+		}
+		if(removedWorkers.size()>0){
+			for(int i = 0;i<removedWorkers.size();i++){
+				String deletionId = removedWorkers.get(i).recordId;
+				Log.d(TAG, "Worker id: " + deletionId);
+				db.delete(JobWorkers.TABLE_NAME, JobWorkers.COLUMN_NAME_WORKERS_ID + " = ? AND "+ JobWorkers.COLUMN_NAME_ORDERS_ID + " = ?", new String[]{deletionId,this.recordId});
+			}
+		}
 	}
 	
 	@Override

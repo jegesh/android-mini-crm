@@ -1,0 +1,44 @@
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@android:style/Widget.ListView.White"
+    android:orientation="vertical"
+    android:id="@+id/orders_member_list_item_3"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:padding="3dp"
+    android:background="#ffffff" >
+    
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="horizontal">
+	    <TextView style="@style/ListItemHeader" 
+	        android:id="@+id/field_title1"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:paddingRight="4dp"
+	        />
+	    <TextView style="@style/ListItemHeader"
+	        android:id="@+id/field_title2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	       android:paddingRight="4dp"
+	        />
+    </LinearLayout>
+	<TextView 
+        style="@style/ListItemSubheader"
+        android:id="@+id/field_subtitle1"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        
+        />
+	<TextView 
+        style="@style/ListItemSubheader"
+        android:id="@+id/field_subtitle2"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        
+        />
+        
+    
+	
+    
+    
+</LinearLayout>

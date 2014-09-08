@@ -48,10 +48,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	public String addedComponentDomain;
 	private LinearLayout custFrame;
 	private LinearLayout currentMemberSuperFrame;
-//	private String newRecordId;
 	private LinearLayout ordersFormContainer;
-	LinkedList<WorkersRecord> removedWorkers;
-	LinkedList<ProductsRecord> removedProducts;
 	private int workersHeaderId;
 	
 	@Override
@@ -162,9 +159,6 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 				OrdersRecord ordersRec = (OrdersRecord)record;
 				ordersRec.populateInputFields(this);
 				
-				removedProducts = new LinkedList<>();
-				removedWorkers = new LinkedList<>();
-				
 				// special code for handling methods associated with special nested nature of orders records
 				if(ordersRec.customer!=null){
 					addCustomerToForm(ordersRec);
@@ -205,7 +199,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 			workersHeaderId = workHeader.getId();
 			ordersFormContainer.addView(workHeader, addinIndex);
 		}else{ 
-			// TODO temp fix, please improve. currently removes all previously visible members, then adds them back in
+			// TODO temp fix, please improve. currently removes all previously visible members, then adds currently active members back in
 		//	int members = currentMemberSuperFrame.getChildCount();
 			currentMemberSuperFrame.removeAllViews();
 		}
@@ -218,25 +212,35 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 			currentMemberSuperFrame.addView(singleWorkerFrame);
 			getLayoutInflater().inflate(R.layout.workers_input_form, singleWorkerFrame);
 			singleWorkerFrame.findViewById(R.id.workers_edit_form_button_bar).setVisibility(View.GONE);
-			ordersRec.workers.get(i).populateInputFields(singleWorkerFrame);
+			((WorkersRecord)ordersRec.workers.get(i)).populateInputFields(singleWorkerFrame);
 			ImageView removeButton = getRemoveButton();
 			removeButton.setOnClickListener(new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
+					// TODO indexing system doesn't work; needs to be rethought
 					Integer listIndex = (Integer) v.getTag();
-					removedWorkers.add(((OrdersRecord)record).workers.get(listIndex.intValue()));
+					
+					// add worker to 'to-be-deleted-from-db' list if it's associated with this order in the db
+					WorkersRecord worker = (WorkersRecord)((OrdersRecord)record).workers.get(listIndex.intValue());
+					if(!worker.newlyAdded)
+						((OrdersRecord)record).removedWorkers.add(worker);
+					
+					// remove worker from record object
 					((OrdersRecord)record).workers.remove(listIndex.intValue());
-					populateFields();
+					
+					// remove worker from form
+					currentMemberSuperFrame.removeView((View) v.getParent());
 				}
 			});
 			removeButton.setTag(Integer.valueOf(i));
 			singleWorkerFrame.addView(removeButton, 0);
 		}
+		/*
 		if(((ViewGroup)findViewById(workersHeaderId)).getChildAt(1) instanceof Button){
 			Button toggle = (Button)((ViewGroup)findViewById(workersHeaderId)).getChildAt(1);
 			toggleHideButtonText(toggle);
-		}
+		}*/
 		currentMemberSuperFrame.setVisibility(View.GONE);
 	}
 
@@ -256,7 +260,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 		toggler.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
-			public void onClick(View v) { // TODO make this general! i.e. local variable instead of workersSuperFrame
+			public void onClick(View v) {
 				if(currentMemberSuperFrame.getVisibility()==View.VISIBLE){
 					currentMemberSuperFrame.setVisibility(View.GONE);
 					toggleHideButtonText((Button)v);
@@ -434,9 +438,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	}
 	
 	public void addRecordMember(View v){
-		// turn it into a fragment when adding cust/prod/worker from within other domain
-		
-		
+		// turn it into a 'fragment' when adding cust/prod/worker from within other domain
 		addedComponentDomain = (String) v.getTag();
 		dialog = new AddMemberDialog();
 		dialog.show(getFragmentManager(), "dialog " + addedComponentDomain);
@@ -446,15 +448,12 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 	
 	// 'save' button click method -- for saving inputed data to database as a new record (or updating) 
 	public void saveRecordToDb(View view) throws Exception {
-		
+		if(record instanceof OrdersRecord)
+			record = (OrdersRecord)record;
 		Log.d(TAG, "table: "+TABLE_NAME);
 		if(record.recordId==null){
 			
-			if(record instanceof OrdersRecord){
-				OrdersRecord ordRec = (OrdersRecord)record;
-				ordRec.saveDataToObject(this);
-			}else
-				record.saveDataToObject(this);
+			record.saveDataToObject(this);
 			
 			if(record.insertNewRecord()){ // if values were typed into fields
 				Toast.makeText(this, getString(R.string.record_saved_success_message), Toast.LENGTH_SHORT).show();
@@ -480,7 +479,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 				finish();
 			}
 
-		}else{ 
+		}else{ // if record already found in db
 			record.saveDataToObject(this);
 			if(record.updateRecord(record.valueMap)){
 				Toast.makeText(this, getString(R.string.record_update_success_message), Toast.LENGTH_SHORT).show();	
@@ -556,14 +555,21 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 			break;
 		case "products":
 			ProductsRecord prod = new ProductsRecord(dialog.addedMemberId,this);
+			prod.newlyAdded = true;
 			ordRec.products.add(prod);
 			addProductsToForm(ordRec);
 			Toast.makeText(this, getString(R.string.message_product_added), Toast.LENGTH_SHORT).show();
 			break;
 		case "workers":
 			WorkersRecord work = new WorkersRecord(dialog.addedMemberId, this);
+			work.newlyAdded = true;
 			ordRec.workers.add(work);
 			addWorkersToForm(ordRec);
+			// TODO add onChangeListener to member frames, in order to change toggle button text/image appropriately
+			// until then, this is the workaround
+			Button workersToggle = (Button) ((LinearLayout)findViewById(workersHeaderId)).getChildAt(1);
+			toggleHideButtonText(workersToggle);
+			
 			Toast.makeText(this, getString(R.string.message_worker_added), Toast.LENGTH_SHORT).show();
 			break;
 		}

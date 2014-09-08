@@ -39,11 +39,19 @@
         <TextView android:id="@+id/content_orders_address"
             style="@style/DisplayContent"
             />
+        <ExpandableListView android:id="@+id/orders_display_members_list"
+            android:layout_height="850dp"
+            android:layout_width="match_parent"
+            
+            >
+            
+        </ExpandableListView>
         
+        <!--
         <View style="@style/hr"
             android:id="@+id/orders_customer_details_divider"
             android:visibility="gone"/>
-        
+         
 	    <LinearLayout android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:orientation="vertical"
@@ -62,5 +70,6 @@
 	        android:orientation="vertical"
 	        android:layout_height="wrap_content"
 	        android:id="@+id/orders_products_fragment_container"></LinearLayout>
+	        -->
 </LinearLayout>
 </ScrollView>

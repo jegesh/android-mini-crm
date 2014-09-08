@@ -23,11 +23,13 @@
 	        android:id="@+id/field_title1"
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
+	        android:paddingRight="4dp"
 	        />
 	    <TextView style="@style/ListItemHeader"
 	        android:id="@+id/field_title2"
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
+	       android:paddingRight="4dp"
 	        />
     </LinearLayout>
 	<TextView 
