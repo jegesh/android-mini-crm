@@ -14,15 +14,20 @@
 	    android:id="@+id/order_new_record_title"
 	    android:hint="@string/order_title_hint"
 	    />
-	<Button android:id="@+id/orders_order_date_btn"
-	    android:onClick="openDatePicker"
+	<LinearLayout 
 	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal">
+	    <Button android:id="@+id/orders_order_date_btn"
+	    android:onClick="openDatePicker"
+	    android:layout_width="wrap_content"
 	    android:layout_height="40dp"
 	    android:layout_gravity="center_horizontal"
 	    android:text="@string/order_date_hint"
 	    />
 	<EditText style="@style/FormInputs"
-	    android:layout_width="150dp"
+	    android:layout_width="0dp"
+	    android:layout_weight="1"
 	    android:id="@+id/orders_new_record_order_date_field"
 	    android:background="@android:color/holo_blue_light"
 	    android:textColor="@android:color/white"
@@ -32,14 +37,20 @@
 	    android:textAlignment="center"
 	    android:enabled="false"
 	    />
+	</LinearLayout>
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal">
 	<Button android:id="@+id/orders_target_date_btn"
 	    android:onClick="openDatePicker"
-	    android:layout_width="match_parent"
+	    android:layout_width="wrap_content"
 	    android:layout_height="40dp"
 	    android:layout_gravity="center_horizontal"
 	    android:text="@string/order_fill_by_date_hint"/>
 	<EditText style="@style/FormInputs"
-	    android:layout_width="150dp"
+	    android:layout_width="0dp"
+	    android:layout_weight="1"
 	    android:id="@+id/orders_new_record_fill_by_date_field"
 	    android:background="@android:color/holo_blue_light"
 	    android:textColor="@android:color/white"
@@ -49,6 +60,7 @@
 	    android:textAlignment="center"
 	    android:enabled="false"
 	    />
+	</LinearLayout>
 	<EditText style="@style/FormInputs"
 	    android:id="@+id/order_new_record_address"
 	    android:hint="@string/order_address_hint"

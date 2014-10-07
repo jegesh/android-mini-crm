@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:padding="8dp">
+    <TextView
+            style="@style/DisplayLabel"            
+            android:text="@string/label_order_date_ordered"/>
+        <View style="@style/minorHr"/>
+        <TextView android:id="@+id/content_order_date_ordered"
+            style="@style/DisplayContent"
+            />
+        <TextView 
+            style="@style/DisplayLabel"            
+            android:text="@string/label_order_target_date"/>
+        <View style="@style/minorHr"/>
+        <TextView android:id="@+id/content_order_target_date"
+            style="@style/DisplayContent"
+            />
+        <TextView 
+            style="@style/DisplayLabel"            
+            android:text="@string/label_order_address"/>
+        <View style="@style/minorHr"/>
+        <TextView android:id="@+id/content_orders_address"
+            style="@style/DisplayContent"
+            />
+
+</LinearLayout>

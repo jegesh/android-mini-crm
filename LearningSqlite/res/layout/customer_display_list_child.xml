@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp" >
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_first_name_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView 
+	    android:id="@+id/customers_first_name"
+	    style="@style/FormInputs"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_last_name_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_last_name"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_phone1_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_phone1"
+	    
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_phone2_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_phone2"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_email_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_email"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_address_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_address"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_contact_name_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_contact_name"
+	    />
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/customer_contact_phone_hint"/>
+    <View style="@style/minorHr"/>
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/customers_contact_phone"
+	    />
+</LinearLayout>

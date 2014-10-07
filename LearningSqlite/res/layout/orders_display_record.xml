@@ -1,14 +1,17 @@
+<!-- 
 <ScrollView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
-<LinearLayout 
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:id="@+id/orders_display_scroll_container">
+    -->
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
     android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:id="@+id/orders_display_container"
@@ -16,8 +19,9 @@
 	
     <TextView
         android:id="@+id/header_orders_display"
-        style="@style/H1" />
-    
+        style="@style/H1" 
+        android:layout_marginBottom="15dp"/>
+    <!-- 
         <TextView
             style="@style/DisplayLabel"            
             android:text="@string/label_order_date_ordered"/>
@@ -39,37 +43,15 @@
         <TextView android:id="@+id/content_orders_address"
             style="@style/DisplayContent"
             />
-        <ExpandableListView android:id="@+id/orders_display_members_list"
-            android:layout_height="850dp"
+    -->
+        <ExpandableListView
+            android:id="@+id/orders_display_members_list"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            
             >
             
         </ExpandableListView>
+                
         
-        <!--
-        <View style="@style/hr"
-            android:id="@+id/orders_customer_details_divider"
-            android:visibility="gone"/>
-         
-	    <LinearLayout android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical"
-	        android:id="@+id/orders_customer_fragment_container"></LinearLayout>
-	    <View style="@style/hr"
-	        android:visibility="gone"
-	        android:id="@+id/orders_workers_details_divider"/>
-	    <LinearLayout android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical"
-	        android:id="@+id/orders_workers_fragment_container"></LinearLayout>
-	    <View style="@style/hr"
-	        android:visibility="gone"
-	        android:id="@+id/orders_products_details_divider"/>
-	    <LinearLayout android:layout_width="match_parent"
-	        android:orientation="vertical"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/orders_products_fragment_container"></LinearLayout>
-	        -->
 </LinearLayout>
-</ScrollView>
+<!-- </ScrollView>-->

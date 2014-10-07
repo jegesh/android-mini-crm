@@ -1,11 +1,15 @@
-package net.gesher.minicrm;
+package database_files;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import database_files.ProductsContract;
-import database_files.ProductsDBHelper;
 import database_files.ProductsContract.Products;
+
+import net.gesher.minicrm.R;
+import net.gesher.minicrm.R.id;
+import net.gesher.minicrm.R.layout;
+import net.gesher.minicrm.R.string;
+
 
 
 import android.app.Activity;
@@ -19,7 +23,7 @@ import android.widget.TextView;
 
 public class ProductsRecord extends DatabaseRecord {
 	String amount;
-	boolean newlyAdded;
+	public boolean newlyAdded;
 	
 	public ProductsRecord( Context activity){
 		super(ProductsContract.Products.TABLE_NAME,R.layout.products_input_form,R.layout.products_display_form,R.string.title_products_main); 

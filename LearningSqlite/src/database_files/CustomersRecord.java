@@ -1,10 +1,14 @@
-package net.gesher.minicrm;
+package database_files;
 
 import java.util.HashMap;
 
-import database_files.CustomersContract;
-import database_files.CustomersDBHelper;
 import database_files.CustomersContract.Customers;
+
+import net.gesher.minicrm.R;
+import net.gesher.minicrm.R.id;
+import net.gesher.minicrm.R.layout;
+import net.gesher.minicrm.R.string;
+
 
 import android.content.Context;
 import android.util.Log;

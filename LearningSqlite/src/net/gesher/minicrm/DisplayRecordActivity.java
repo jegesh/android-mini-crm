@@ -20,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,20 +28,29 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupCollapseListener;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import database_files.CustomersContract.Customers;
+import database_files.CustomersRecord;
+import database_files.DatabaseRecord;
 import database_files.DbConstants;
+import database_files.OrdersRecord;
+import database_files.ProductsRecord;
+import database_files.WorkersRecord;
 import database_files.JobsProductsContract.JobsProducts;
 import database_files.ProductsContract.Products;
 import database_files.WorkersContract.Workers;
@@ -73,13 +83,18 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	private int productsHeaderId;
 	private int workersListItemLayout;
 	private int productsListItemLayout;
-	
+	int groupHeaderHeight;
+	private ExpandableListView lView;
+	private boolean firstTime;
+	protected int initialListHeight;
+	protected OrdersDisplayListAdapter mListAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		workersListItemLayout = R.layout.main_screen_listview_item_2;
 		productsListItemLayout = R.layout.main_screen_listview_item_1;
+		
 	}
 	
 	@Override
@@ -112,6 +127,25 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		}
 	//	Log.d(TAG, "layout id: "+currentRecord.layoutId);
 		setContentView(currentRecord.displayLayoutId);
+		if(currentRecord instanceof OrdersRecord){
+			lView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
+			
+	//		lView.setOnGroupExpandListener(getExpandListener());
+	//		lView.setOnGroupCollapseListener(getCollapseListener());
+	//		firstTime = false;
+	/*		lView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+				
+				@Override
+				public void onGlobalLayout() {
+					if(!firstTime){
+					groupHeaderHeight = lView.getHeight() + 2;
+					setInitialListHeight(lView);
+					firstTime = true;
+					}
+				}
+			});
+			*/
+		}
 		this.setTitle(getString(currentRecord.titleId));
 		XMLLayoutParser par = new XMLLayoutParser(this);
 		try {
@@ -123,6 +157,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		}
 		fillFields();
 		super.onResume();
+	//	Log.d(TAG, "Height of list: "+lView.getHeight());
 	}
 	
 	public void editRecord(String requestedDomain, String recordId){
@@ -141,26 +176,33 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		memberRec.displayIdsToColumns.keySet().toArray(displayIds);
 		for(int i = 0; i<memberRec.displayIdsToColumns.size();i++){
 			TextView txtView = (TextView)context.findViewById(displayIds[i]);
-			txtView.setText(memberRec.valueMap.get(memberRec.displayIdsToColumns.get(displayIds[i])));
+			if(txtView != null)
+				txtView.setText(memberRec.valueMap.get(memberRec.displayIdsToColumns.get(displayIds[i])));
 		}
 	}
 		
 	private void fillFields(){
 		for(int i = 0; i<contentIds.length;i++){
 			TextView txtView = (TextView)findViewById(contentIds[i]);
-			txtView.setText(currentRecord.valueMap.get(currentRecord.displayIdsToColumns.get(contentIds[i])));
+			if(txtView != null)
+				txtView.setText(currentRecord.valueMap.get(currentRecord.displayIdsToColumns.get(contentIds[i])));
 		}
 		LinearLayout container = (LinearLayout) findViewById(R.id.orders_display_container);
 		if(currentRecord instanceof OrdersRecord){
 			
 			OrdersRecord oRecord = (OrdersRecord)currentRecord;
 //			Toast.makeText(this, "Cust name: "+oRecord.customer.valueMap.get(Customers.COLUMN_NAME_FIRST_NAME), Toast.LENGTH_SHORT).show();
-			ExpandableListView lView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
+		//	ExpandableListView lView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
 			ArrayList<HashMap<String,String>> headerMapList = new ArrayList<>();
 			ArrayList<ArrayList<HashMap<String, String>>> childDataList = new ArrayList<>();
 			
+			HashMap<String, String> orderDetailsMap = new HashMap<>();
+			orderDetailsMap.put(KEY_MEMBER_TITLE, getString(R.string.label_order_details));
+			orderDetailsMap.put(KEY_MEMBER_COUNT, null);
+			headerMapList.add(orderDetailsMap);
+			childDataList.add(getMemberList(DbConstants.ORDERS));
 			
-			// code to handle customer textViews
+			// code to handle customer info
 			if(oRecord.customer!=null){
 				HashMap<String, String> custHeaderMap = new HashMap<>();
 				custHeaderMap.put(KEY_MEMBER_TITLE, getString(R.string.label_customer_info));
@@ -241,16 +283,67 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			String[] fromKeys = {KEY_MEMBER_TITLE,KEY_MEMBER_COUNT};
 			String[] fromChildrenKeys = {KEY_CHILD_TITLE1,KEY_CHILD_TITLE2,KEY_CHILD_SUBTITLE1,KEY_CHILD_SUBTITLE2};
 			int[] toChildFields = {R.id.field_title1,R.id.field_title2,R.id.field_subtitle1,R.id.field_subtitle2};
-			ExpandableListAdapter adapter = new SimpleExpandableListAdapter(this, headerMapList, R.layout.main_screen_listview_item_2, fromKeys, toFields, childDataList, R.layout.listview_item_3, fromChildrenKeys, toChildFields);
+			OrdersDisplayListAdapter adapter = new OrdersDisplayListAdapter(this, headerMapList, fromKeys, toFields, 
+					childDataList, R.layout.listview_item_3, fromChildrenKeys, toChildFields, oRecord.displayIdsToColumns,
+					oRecord.customer.displayIdsToColumns);
+			mListAdapter = adapter;
 			lView.setAdapter(adapter);
-			
+			lView.setDividerHeight(3);
+			lView.expandGroup(0);
+	//		lView.setFocusable(false);
 		}
+	}
+	
+	private void setInitialListHeight(ExpandableListView listView){
+		LayoutParams lp = listView.getLayoutParams();
+		int groups = listView.getExpandableListAdapter().getGroupCount();
+		Log.d(TAG, "No of groups: "+groups+", Height of list: "+ listView.getHeight());
+		lp.height = groupHeaderHeight * groups;
+		listView.setLayoutParams(lp);
+		initialListHeight = lp.height;
+//		listView.refreshDrawableState(); // don't know if this is necessary
+	}
+	
+	private OnGroupCollapseListener getCollapseListener(){
+		OnGroupCollapseListener listener = new OnGroupCollapseListener() {
+			
+			@Override
+			public void onGroupCollapse(int groupPosition) {
+				LinearLayout.LayoutParams param = (LinearLayout.LayoutParams) lView.getLayoutParams();
+				int collapsedChildren = mListAdapter.getChildrenCount(groupPosition);
+			    int itemHeight = mListAdapter.getChildView(groupPosition, 0, false, null, null).getHeight();
+				param.height = initialListHeight - (collapsedChildren * 290); //TODO find height dynamically
+			    lView.setLayoutParams(param);
+				initialListHeight = param.height;
+			}
+		};
+		return listener;
+	}
+	
+	private OnGroupExpandListener getExpandListener(){
+		OnGroupExpandListener listener = new OnGroupExpandListener() {
+			
+			@Override
+			public void onGroupExpand(int groupPosition) {
+	//			ExpandableListView expListView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
+	//			ScrollView scrollView = (ScrollView)findViewById(R.id.orders_display_scroll_container);
+				LinearLayout.LayoutParams param = (LinearLayout.LayoutParams) lView.getLayoutParams();
+				int expandedChildren = mListAdapter.getChildrenCount(groupPosition);
+			    int itemHeight = mListAdapter.getChildView(groupPosition, 0, false, null, null).getHeight();
+				param.height = initialListHeight + (expandedChildren * 290); //TODO find height dynamically
+			    lView.setLayoutParams(param);
+	//		    lView.refreshDrawableState();
+	//		    scrollView.refreshDrawableState();
+				initialListHeight = param.height;
+			}
+		};
+		return listener;
 	}
 
 	// returns a disappeared list view containing all the member records for a given type -- NOT
 	//NOTE: constructing the adapter may take some time -- consider doing asynchronously -- NOT
 	private ArrayList<HashMap<String, String>> getMemberList(String memberType){
-		ListView lView = new ListView(this);
+//		ListView lView = new ListView(this);
 		
 		// this block necessary to allow scrolling of listview that's a descendant of a scrollView element
 		// it has been commented that this only works if all list items are the same height
@@ -283,7 +376,13 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		*/
 		ArrayList<HashMap<String, String>> memberList = new ArrayList<>();
 		OrdersRecord order = (OrdersRecord)currentRecord;
+		
+		// construct list of value hashes for display in expandable list
+		// key is meaningless, value is value that will be displayed therein
 		switch (memberType) {
+		case DbConstants.ORDERS:
+			memberList.add((HashMap<String, String>) order.valueMap);
+			break;
 		case DbConstants.PRODUCTS:
 			for(ProductsRecord rec:order.products){
 				HashMap<String, String> childData = new HashMap<>();
@@ -305,12 +404,14 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			}
 			break;
 		case DbConstants.CUSTOMERS:
+			/*
 			HashMap<String, String> childData = new HashMap<>();
 			childData.put(KEY_CHILD_TITLE1, order.customer.valueMap.get(Customers.COLUMN_NAME_FIRST_NAME));
 			childData.put(KEY_CHILD_TITLE2, order.customer.valueMap.get(Customers.COLUMN_NAME_LAST_NAME));
 			childData.put(KEY_CHILD_SUBTITLE1, order.customer.valueMap.get(Customers.COLUMN_NAME_ADDRESS));
 			childData.put(KEY_CHILD_SUBTITLE2, null);
-			memberList.add(childData);
+			*/
+			memberList.add((HashMap<String, String>) order.customer.valueMap);
 			break;
 
 		default:
@@ -435,6 +536,80 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		
 			return true;
 		case R.id.menu_item_call:
+			// workaround for problem of TextViews being null when ExpandableListView group containing them is not open
+			if(currentRecord instanceof OrdersRecord){
+				OrdersRecord record = (OrdersRecord)currentRecord;
+				if(record.customer == null)
+					return true;
+				else{
+					AsyncTask<String, Integer, Integer> task = new AsyncTask<String, Integer, Integer>() {
+						
+						@Override
+						protected Integer doInBackground(String... params) {
+							
+							return null;
+						}
+						
+						@Override
+						protected void onPreExecute() {
+							lView.expandGroup(1);
+							super.onPreExecute();
+						}
+						
+						@Override
+						protected void onPostExecute(Integer result) {
+							phoneFields[0] = R.id.customers_phone1;
+							phoneFields[1] = R.id.customers_phone2;
+							phoneFields[2] = R.id.customers_contact_phone;
+							
+							phoneLabels[0] = getString(R.string.customer_phone1_hint)+": "+((TextView)findViewById(phoneFields[0])).getText();
+							phoneLabels[1] = getString(R.string.customer_phone2_hint)+": "+((TextView)findViewById(phoneFields[1])).getText();
+							phoneLabels[2] = getString(R.string.customer_contact_phone_hint)+": "+((TextView)findViewById(phoneFields[2])).getText();
+							
+							phoneString = "";
+							ArrayList<String> phones = new ArrayList<>();
+							for(int phoneId:phoneFields){
+								TextView tView = (TextView)findViewById(phoneId);
+								if(tView!=null && tView.getText().length()>=9)
+									phones.add(tView.getText().toString());
+							}
+							if(phones.size()==1){
+								phoneString = phones.get(0);
+								// strip off dashes and other unwanted characters
+								StringBuilder phoneNum = new StringBuilder();
+								for(int i = 0;i<phoneString.length();i++){
+									if((byte)phoneString.substring(i, i+1).toCharArray()[0]<58 && (byte)phoneString.substring(i, i+1).toCharArray()[0]>46)
+										phoneNum.append(phoneString.substring(i, i+1));
+								}
+
+								// check availability of phone app and open intent
+								PackageManager packageManager = getPackageManager();
+								Uri number = Uri.parse("tel:"+ phoneNum);
+								Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+								List<ResolveInfo> activities = packageManager.queryIntentActivities(callIntent, 0);
+								boolean isIntentSafe = activities.size() > 0;
+								if(isIntentSafe){
+									startActivity(callIntent);
+
+								}
+							}
+							else if(phones.size()==0){
+								Toast.makeText(getBaseContext(), getString(R.string.message_no_phone_number), Toast.LENGTH_SHORT).show();
+								return ;
+							}else{
+								DialogFragment newFragment = new PhonePickerFragment();
+				    			newFragment.show(getFragmentManager(), "phone nums");
+							}
+							super.onPostExecute(result);
+							
+						}
+					};
+					task.execute(new String[]{});
+					
+					return true;
+					// end stupid workaround
+				}
+			}
 			switch (getIntent().getStringExtra(ViewDbActivity.DOMAIN)) {
 			case DbConstants.CUSTOMERS:
 				phoneFields[0] = R.id.customers_phone1;
@@ -445,15 +620,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				phoneLabels[2] = getString(R.string.customer_contact_phone_hint)+": "+((TextView)findViewById(phoneFields[2])).getText();
 				break;
 			case DbConstants.ORDERS:
-				if(((OrdersRecord)currentRecord).customer != null){
-					phoneFields[0] = R.id.customers_phone1;
-					phoneFields[1] = R.id.customers_phone2;
-					phoneFields[2] = R.id.customers_contact_phone;
-					
-					phoneLabels[0] = getString(R.string.customer_phone1_hint)+": "+((TextView)findViewById(phoneFields[0])).getText();
-					phoneLabels[1] = getString(R.string.customer_phone2_hint)+": "+((TextView)findViewById(phoneFields[1])).getText();
-					phoneLabels[2] = getString(R.string.customer_contact_phone_hint)+": "+((TextView)findViewById(phoneFields[2])).getText();
-				}
+				
 				break;
 			case DbConstants.WORKERS:
 				phoneFields[0] = R.id.workers_phone1;
@@ -468,6 +635,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			default:
 				break;
 			}
+			
 			phoneString = "";
 			ArrayList<String> phones = new ArrayList<>();
 			for(int phoneId:phoneFields){
@@ -488,14 +656,59 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			}
 			return true;
 		case R.id.menu_item_email:
-			String emailAddress = ((TextView)findViewById(emailAddressId)).getText().toString();
-			// TODO use email regex
-			if(emailAddress.length()>8 && emailAddress.contains("@")){
-				Intent emailIntent = new Intent(Intent.ACTION_SEND);
-				emailIntent.setType(HTTP.PLAIN_TEXT_TYPE);
-				emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {emailAddress});
-				startActivity(emailIntent);
+			// ridiculous workaround for orders records
+			if(currentRecord instanceof OrdersRecord && ((OrdersRecord)currentRecord).customer != null){
+				AsyncTask<String, Integer, Integer> task = new AsyncTask<String, Integer, Integer>() {
+					
+					@Override
+					protected void onPreExecute() {
+						lView.expandGroup(1);
+						super.onPreExecute();
+					}
+					
+					@Override
+					protected Integer doInBackground(String... params) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					protected void onPostExecute(Integer result) {
+						TextView emailTxt = (TextView)findViewById(emailAddressId);
+						if(emailTxt != null){
+							String emailAddress = emailTxt.getText().toString();
+							// TODO use email regex
+							if(emailAddress.length()>9 && emailAddress.contains("@")){
+								Intent emailIntent = new Intent(Intent.ACTION_SEND);
+								emailIntent.setType(HTTP.PLAIN_TEXT_TYPE);
+								emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {emailAddress});
+								startActivity(emailIntent);
+								return ;
+							}
+						}else{
+							Toast.makeText(getBaseContext(), R.string.message_no_email, Toast.LENGTH_SHORT).show();
+						}
+
+						super.onPostExecute(result);
+					}
+				};
+				task.execute(new String[]{});
 				return true;
+				// end of workaround
+			}
+			TextView emailTxt = (TextView)findViewById(emailAddressId);
+			if(emailTxt != null){
+				String emailAddress = emailTxt.getText().toString();
+				// TODO use email regex
+				if(emailAddress.length()>9 && emailAddress.contains("@")){
+					Intent emailIntent = new Intent(Intent.ACTION_SEND);
+					emailIntent.setType(HTTP.PLAIN_TEXT_TYPE);
+					emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {emailAddress});
+					startActivity(emailIntent);
+					return true;
+				}
+			}else{
+				Toast.makeText(this, R.string.message_no_email, Toast.LENGTH_SHORT).show();
 			}
 			return false;
 

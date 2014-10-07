@@ -1,0 +1,27 @@
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_db_orders_list_item"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:padding="8dp"
+    android:paddingLeft="45dp"
+    android:orientation="horizontal"
+    android:background="@color/list_group_header_background" >
+   
+    
+	    <TextView style="@style/ListItemHeader" 
+	        android:id="@+id/field_title1"
+	        android:layout_height="wrap_content"
+	        android:layout_width="0dp"
+	        android:layout_weight="1"
+	        android:textSize="21sp"
+	        android:paddingStart="45dp"
+	        />
+	    <TextView style="@style/ListItemHeader"
+	        android:id="@+id/field_title2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        />
+   
+    
+</LinearLayout>

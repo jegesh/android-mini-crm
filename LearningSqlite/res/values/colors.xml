@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="light_green_background">#eaf9af</color>
+    <color name="list_group_header_background">#71f23a</color>
+    <color name="list_group_child_background">#bdf4a6</color>
 </resources>

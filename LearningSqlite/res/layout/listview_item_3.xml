@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:padding="3dp"
-    android:background="#ffffff" >
+    android:background="@color/list_group_child_background" >
     
     <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="horizontal">
 	    <TextView style="@style/ListItemHeader" 

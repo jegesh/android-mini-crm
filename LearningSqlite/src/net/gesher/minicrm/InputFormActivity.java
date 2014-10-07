@@ -3,8 +3,13 @@ package net.gesher.minicrm;
 import java.util.LinkedList;
 
 import database_files.CustomersContract;
+import database_files.CustomersRecord;
+import database_files.DatabaseRecord;
 import database_files.DbConstants;
 import database_files.OrdersContract;
+import database_files.OrdersRecord;
+import database_files.ProductsRecord;
+import database_files.WorkersRecord;
 import database_files.ProductsContract.Products;
 import database_files.WorkersContract.Workers;
 

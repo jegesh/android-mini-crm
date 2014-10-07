@@ -1,16 +1,19 @@
-package net.gesher.minicrm;
+package database_files;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import database_files.JobWorkersContract;
-import database_files.OrdersDBHelper;
 import database_files.JobWorkersContract.JobWorkers;
 import database_files.JobsProductsContract.JobsProducts;
 import database_files.OrdersContract.Orders;
 import database_files.ProductsContract.Products;
-import database_files.WorkersContract.Workers;
+
+import net.gesher.minicrm.R;
+import net.gesher.minicrm.R.id;
+import net.gesher.minicrm.R.layout;
+import net.gesher.minicrm.R.string;
+
 
 
 import android.app.Activity;
@@ -252,10 +255,11 @@ public class OrdersRecord extends DatabaseRecord {
 	@Override
 	protected void setDisplayIdsToColumns() {
 		displayIdsToColumns.put(R.id.header_orders_display, Orders.COLUMN_NAME_TITLE);
+		/*
 		displayIdsToColumns.put(R.id.content_order_date_ordered, Orders.COLUMN_NAME_ORDER_DATE);
 		displayIdsToColumns.put(R.id.content_order_target_date, Orders.COLUMN_NAME_FILL_BY_DATE);
 		displayIdsToColumns.put(R.id.content_orders_address, Orders.COLUMN_NAME_ADDRESS);
-		
+		*/
 	}
 	
 	/*

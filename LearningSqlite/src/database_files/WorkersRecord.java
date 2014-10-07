@@ -1,12 +1,16 @@
-package net.gesher.minicrm;
+package database_files;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import database_files.WorkersContract;
-import database_files.WorkersDBHelper;
 import database_files.WorkersContract.Workers;
+
+import net.gesher.minicrm.R;
+import net.gesher.minicrm.R.id;
+import net.gesher.minicrm.R.layout;
+import net.gesher.minicrm.R.string;
+
 
 
 import android.app.Activity;
@@ -20,7 +24,7 @@ import android.widget.Toast;
 
 public class WorkersRecord extends DatabaseRecord {
 	//public String recordId;
-	boolean newlyAdded;
+	public boolean newlyAdded;
 
 	
 	public WorkersRecord(Context activity){
