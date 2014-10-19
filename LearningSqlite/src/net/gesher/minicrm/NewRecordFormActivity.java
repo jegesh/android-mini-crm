@@ -38,11 +38,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class InputFormActivity extends Activity implements NoticeDatePickerDialogListener, AddMemberDialogListener {
+public class NewRecordFormActivity extends Activity implements NoticeDatePickerDialogListener, AddMemberDialogListener {
 	private static final String NEW_RECORD_ID = "New record id";
 	private static final String REQUESTING_RECORD_ID = "requesting id";
 //	private int[] inputIds;
-	public static final String TAG = "InputFormActivity";
+	public static final String TAG = "NewRecordFormActivity";
 	public static final String CUSTOMER_ID = "customer ID";
 	private DatabaseRecord record;
 	private String TABLE_NAME;
@@ -129,8 +129,10 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 		}*/
 		
 		populateFields();
-		if(TABLE_NAME.equals(Products.TABLE_NAME) )
-			populatePriceUnitSpinner();
+		if(TABLE_NAME.equals(Products.TABLE_NAME) ){
+			Spinner spinner = (Spinner)findViewById(R.id.products_input_sale_unit_spinner);
+			populatePriceUnitSpinner(spinner, record, this);
+		}
 	
 
 	}
@@ -463,7 +465,7 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 			if(record.insertNewRecord()){ // if values were typed into fields
 				Toast.makeText(this, getString(R.string.record_saved_success_message), Toast.LENGTH_SHORT).show();
 	/*			if(getIntent().hasExtra(REQUESTING_RECORD_ID)){
-					Intent intent = new Intent(this, InputFormActivity.class);
+					Intent intent = new Intent(this, NewRecordFormActivity.class);
 					// send back id of record that the request came from 
 					intent.putExtra(ViewDbActivity.RECORD_ID, getIntent().getStringExtra(REQUESTING_RECORD_ID));
 					// send id of new 'child' record that was just created
@@ -495,12 +497,11 @@ public class InputFormActivity extends Activity implements NoticeDatePickerDialo
 		}
 	}
 	
-	private void populatePriceUnitSpinner(){
+	protected static void populatePriceUnitSpinner(Spinner spinner, DatabaseRecord record, Activity activity){
 		Cursor c = record.db.query(Products.TABLE_NAME, null, 
 				null, null, Products.COLUMN_NAME_SELL_BY_UNIT, null, null); // new String[]{Products.COLUMN_NAME_SELL_BY_UNIT} 
-		SimpleCursorAdapter priceUnitAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, c, new String[]{Products.COLUMN_NAME_SELL_BY_UNIT}, new int[]{android.R.id.text1}, 0);
+		SimpleCursorAdapter priceUnitAdapter = new SimpleCursorAdapter(activity, android.R.layout.simple_spinner_item, c, new String[]{Products.COLUMN_NAME_SELL_BY_UNIT}, new int[]{android.R.id.text1}, 0);
 		priceUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		Spinner spinner = (Spinner)findViewById(R.id.products_input_sale_unit_spinner);
 		spinner.setAdapter(priceUnitAdapter);
 	}
 	

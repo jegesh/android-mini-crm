@@ -540,7 +540,7 @@ public class ViewDbActivity extends ListActivity implements NoticeDialogListener
 			un.show(getFragmentManager(), UNAVAILABLE_FEATURE);
 			return true;
 		case R.id.add_record:
-			Intent intent = new Intent(this, InputFormActivity.class);
+			Intent intent = new Intent(this, NewRecordFormActivity.class);
 			intent.putExtra(DOMAIN, DbConstants.currentDomain);
 			startActivity(intent);
 				return true;

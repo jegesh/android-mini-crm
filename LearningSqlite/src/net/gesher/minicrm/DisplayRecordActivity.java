@@ -3,9 +3,7 @@ package net.gesher.minicrm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import net.gesher.minicrm.ConfirmDeletionDialog.NoticeDialogListener;
 import net.gesher.minicrm.PhonePickerFragment.PhoneDialogListener;
@@ -15,45 +13,39 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.ExpandableListAdapter;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
-import android.widget.ExpandableListView.OnGroupExpandListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.SimpleAdapter;
-import android.widget.SimpleExpandableListAdapter;
+import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import database_files.CustomersContract.Customers;
 import database_files.CustomersRecord;
 import database_files.DatabaseRecord;
 import database_files.DbConstants;
-import database_files.OrdersRecord;
-import database_files.ProductsRecord;
-import database_files.WorkersRecord;
 import database_files.JobsProductsContract.JobsProducts;
+import database_files.OrdersRecord;
 import database_files.ProductsContract.Products;
+import database_files.ProductsRecord;
 import database_files.WorkersContract.Workers;
+import database_files.WorkersRecord;
 
 
 public class DisplayRecordActivity extends Activity implements NoticeDialogListener,PhoneDialogListener {
@@ -63,10 +55,10 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	private static final String KEY_CHILD_TITLE1 = "title1";
 	private static final String KEY_MEMBER_TITLE = "Title";
 	private static final String KEY_MEMBER_COUNT = "Count";
+	public static final String TAG_SELL_UNIT = "sell_unit";
 	public static final String DELETION_DIALOG_FRAG_TAG = "deletion dialog";
 	public static final String TAG = "DisplayRecord";
 	
-	//private SQLiteDatabase db;
 	public DatabaseRecord currentRecord;
 	public int[] phoneFields;
 	public String[] phoneLabels;
@@ -74,9 +66,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	private int[] contentIds;
 	int emailAddressId;
 	private String phoneString;
-	//private String tableName;
-	//private String[] fields;
-	//private Cursor c;
 	private LinearLayout custFrame;
 	private LinearLayout ordersFormContainer;
 	private int workersHeaderId;
@@ -88,6 +77,8 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	private boolean firstTime;
 	protected int initialListHeight;
 	protected OrdersDisplayListAdapter mListAdapter;
+	private InputMethodManager imm;
+	private String fieldContent;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +90,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	
 	@Override
 	protected void onResume() {
-	//	Log.d(TAG, getIntent().getStringExtra(ViewDbActivity.RECORD_ID));
 		switch (getIntent().getStringExtra(ViewDbActivity.DOMAIN)) {
 		case DbConstants.ORDERS:
 			currentRecord = new OrdersRecord(getIntent().getStringExtra(ViewDbActivity.RECORD_ID), this);
@@ -125,26 +115,11 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		default:
 			break;
 		}
-	//	Log.d(TAG, "layout id: "+currentRecord.layoutId);
 		setContentView(currentRecord.displayLayoutId);
 		if(currentRecord instanceof OrdersRecord){
 			lView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
 			
-	//		lView.setOnGroupExpandListener(getExpandListener());
-	//		lView.setOnGroupCollapseListener(getCollapseListener());
-	//		firstTime = false;
-	/*		lView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-				
-				@Override
-				public void onGlobalLayout() {
-					if(!firstTime){
-					groupHeaderHeight = lView.getHeight() + 2;
-					setInitialListHeight(lView);
-					firstTime = true;
-					}
-				}
-			});
-			*/
+
 		}
 		this.setTitle(getString(currentRecord.titleId));
 		XMLLayoutParser par = new XMLLayoutParser(this);
@@ -157,11 +132,87 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		}
 		fillFields();
 		super.onResume();
-	//	Log.d(TAG, "Height of list: "+lView.getHeight());
+	}
+	
+	class SaveEditClickListener implements OnClickListener{
+		View edit;
+		String column;
+		
+		public SaveEditClickListener(View editableField, int fieldId){
+			column = currentRecord.displayIdsToColumns.get(fieldId);
+			edit = editableField;
+		}
+		
+		@Override
+		public void onClick(View v) {
+			String content = "";
+			switch ((String)v.getTag()) {
+			case TAG_SELL_UNIT: // products sell-by unit spinner
+				Spinner spinner = (Spinner)edit;
+				content = ((TextView)spinner.getSelectedView()).getText().toString();
+				break;
+
+			default:
+				content = ((EditText)edit).getText().toString();
+				
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+				break;
+			}
+			currentRecord.valueMap.put(column, content);
+			if(currentRecord.updateRecord(currentRecord.valueMap))
+				Toast.makeText(getBaseContext(), getString(R.string.message_changes_saved), Toast.LENGTH_SHORT).show();
+			else
+				Toast.makeText(getBaseContext(), getString(R.string.message_error_saving), Toast.LENGTH_SHORT).show();
+		}
+		
+	}
+	
+	public void editField(View v){
+		if(v.getTag() != null){
+		switch ((String)v.getTag()) {
+		case TAG_SELL_UNIT:
+			// replace textView with Spinner populated by existant values in db
+			Spinner spinner = new Spinner(this);
+			LayoutParams spinnerLp = new TableRow.LayoutParams(0,LayoutParams.WRAP_CONTENT,1);
+			spinner.setLayoutParams(spinnerLp);
+			replaceFieldWithEditable(spinner, (ImageView)v);
+			NewRecordFormActivity.populatePriceUnitSpinner(spinner, currentRecord, this);
+			break;
+
+		default:
+			
+			break;
+		}
+		}else{
+			EditText fieldEdit = new EditText(this);
+			LayoutParams editLp = new TableRow.LayoutParams(0,LayoutParams.WRAP_CONTENT,1);
+			fieldEdit.setLayoutParams(editLp);
+			fieldEdit.setSelectAllOnFocus(true);
+			fieldEdit.requestFocus();
+			fieldEdit.setTextSize(22);
+			replaceFieldWithEditable(fieldEdit, (ImageView)v);
+			fieldEdit.setText(fieldContent);
+			imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(fieldEdit, InputMethodManager.SHOW_IMPLICIT);
+			
+		}
+		
+	}
+
+	private void replaceFieldWithEditable(View editableField, ImageView button) {
+		LinearLayout parent = (LinearLayout) button.getParent();
+		TextView fieldTxt = (TextView) parent.getChildAt(0);
+		fieldContent = fieldTxt.getText().toString();
+		fieldTxt.setVisibility(View.GONE);
+		
+		parent.addView(editableField, 0);
+		button.setImageResource(R.drawable.ic_action_save_grey);
+		button.setOnClickListener(new SaveEditClickListener(editableField, fieldTxt.getId()));
+		
 	}
 	
 	public void editRecord(String requestedDomain, String recordId){
-		Intent intent = new Intent(this, InputFormActivity.class);
+		Intent intent = new Intent(this, NewRecordFormActivity.class);
 		intent.putExtra(ViewDbActivity.DOMAIN, requestedDomain);
 		intent.putExtra(ViewDbActivity.RECORD_ID, recordId);
 		startActivity(intent);
@@ -171,16 +222,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		editRecord(DbConstants.CUSTOMERS, ((OrdersRecord)currentRecord).customer.recordId);
 	}
 	
-	private void fillFields(View context, DatabaseRecord memberRec){
-		Integer[] displayIds = new Integer[memberRec.displayIdsToColumns.size()];
-		memberRec.displayIdsToColumns.keySet().toArray(displayIds);
-		for(int i = 0; i<memberRec.displayIdsToColumns.size();i++){
-			TextView txtView = (TextView)context.findViewById(displayIds[i]);
-			if(txtView != null)
-				txtView.setText(memberRec.valueMap.get(memberRec.displayIdsToColumns.get(displayIds[i])));
-		}
-	}
-		
 	private void fillFields(){
 		for(int i = 0; i<contentIds.length;i++){
 			TextView txtView = (TextView)findViewById(contentIds[i]);
@@ -191,8 +232,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		if(currentRecord instanceof OrdersRecord){
 			
 			OrdersRecord oRecord = (OrdersRecord)currentRecord;
-//			Toast.makeText(this, "Cust name: "+oRecord.customer.valueMap.get(Customers.COLUMN_NAME_FIRST_NAME), Toast.LENGTH_SHORT).show();
-		//	ExpandableListView lView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
 			ArrayList<HashMap<String,String>> headerMapList = new ArrayList<>();
 			ArrayList<ArrayList<HashMap<String, String>>> childDataList = new ArrayList<>();
 			
@@ -209,45 +248,8 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				custHeaderMap.put(KEY_MEMBER_COUNT, null);
 				headerMapList.add(custHeaderMap);
 				
-				// needs to be fixed to display all customer info
 				childDataList.add(getMemberList(DbConstants.CUSTOMERS));
 				
-				/*
-				custFrame = (LinearLayout)findViewById(R.id.orders_customer_fragment_container);
-				getLayoutInflater().inflate(R.layout.customer_display, custFrame);
-				LinearLayout custHeader = new LinearLayout(this);
-				custHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-				custHeader.setOrientation(LinearLayout.HORIZONTAL);
-				TextView frameTitle = new TextView(this);
-				LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
-				titleLp.weight = 1;
-				frameTitle.setLayoutParams(titleLp);
-				frameTitle.setText(R.string.label_customer_info);
-				frameTitle.setTextSize(24);
-				frameTitle.setTextColor(Color.BLUE);
-				int addinIndex = container.indexOfChild(custFrame);
-				custHeader.addView(frameTitle);
-				Button toggler = getToggleButton();
-				toggler.setOnClickListener(new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						if(custFrame.getVisibility()==View.VISIBLE){
-							custFrame.setVisibility(View.GONE);
-							((Button)v).setText(R.string.btn_show_orders_member);
-						}else{
-							custFrame.setVisibility(View.VISIBLE);
-							((Button)v).setText(R.string.btn_hide_orders_member);
-						}
-						
-					}
-				});
-				custHeader.addView(toggler);
-				container.addView(custHeader, addinIndex);
-				fillFields(custFrame, oRecord.customer);
-				findViewById(R.id.orders_customer_details_divider).setVisibility(View.VISIBLE);
-				custFrame.setVisibility(View.GONE);
-				*/
 			}
 			
 			// code to handle display of products
@@ -268,16 +270,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				headerMapList.add(workersHeaderMap);
 				
 				childDataList.add(getMemberList(DbConstants.WORKERS));
-				/*
-				LinearLayout workersSuperFrame = (LinearLayout)findViewById(R.id.orders_workers_fragment_container);
-				LinearLayout workersHeader = getMemberGroupHeader(workersSuperFrame, R.string.label_workers_info);
-				
-				container = (LinearLayout)findViewById(R.id.orders_display_container);
-				container.addView(workersHeader, container.indexOfChild(workersSuperFrame));
-				String[] cols = {Workers.COLUMN_NAME_FIRST_NAME,Workers.COLUMN_NAME_LAST_NAME,Workers.COLUMN_NAME_OCCUPATION};
-				workersSuperFrame.addView(getMemberList(oRecord.workers, workersListItemLayout,cols,DbConstants.listItemFields2));
-				workersSuperFrame.setVisibility(View.GONE);
-				findViewById(R.id.orders_workers_details_divider).setVisibility(View.VISIBLE); */
 			}
 			int[] toFields = {R.id.field_title1,R.id.field_title2};
 			String[] fromKeys = {KEY_MEMBER_TITLE,KEY_MEMBER_COUNT};
@@ -293,92 +285,15 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	//		lView.setFocusable(false);
 		}
 	}
+		
 	
-	private void setInitialListHeight(ExpandableListView listView){
-		LayoutParams lp = listView.getLayoutParams();
-		int groups = listView.getExpandableListAdapter().getGroupCount();
-		Log.d(TAG, "No of groups: "+groups+", Height of list: "+ listView.getHeight());
-		lp.height = groupHeaderHeight * groups;
-		listView.setLayoutParams(lp);
-		initialListHeight = lp.height;
-//		listView.refreshDrawableState(); // don't know if this is necessary
-	}
-	
-	private OnGroupCollapseListener getCollapseListener(){
-		OnGroupCollapseListener listener = new OnGroupCollapseListener() {
-			
-			@Override
-			public void onGroupCollapse(int groupPosition) {
-				LinearLayout.LayoutParams param = (LinearLayout.LayoutParams) lView.getLayoutParams();
-				int collapsedChildren = mListAdapter.getChildrenCount(groupPosition);
-			    int itemHeight = mListAdapter.getChildView(groupPosition, 0, false, null, null).getHeight();
-				param.height = initialListHeight - (collapsedChildren * 290); //TODO find height dynamically
-			    lView.setLayoutParams(param);
-				initialListHeight = param.height;
-			}
-		};
-		return listener;
-	}
-	
-	private OnGroupExpandListener getExpandListener(){
-		OnGroupExpandListener listener = new OnGroupExpandListener() {
-			
-			@Override
-			public void onGroupExpand(int groupPosition) {
-	//			ExpandableListView expListView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
-	//			ScrollView scrollView = (ScrollView)findViewById(R.id.orders_display_scroll_container);
-				LinearLayout.LayoutParams param = (LinearLayout.LayoutParams) lView.getLayoutParams();
-				int expandedChildren = mListAdapter.getChildrenCount(groupPosition);
-			    int itemHeight = mListAdapter.getChildView(groupPosition, 0, false, null, null).getHeight();
-				param.height = initialListHeight + (expandedChildren * 290); //TODO find height dynamically
-			    lView.setLayoutParams(param);
-	//		    lView.refreshDrawableState();
-	//		    scrollView.refreshDrawableState();
-				initialListHeight = param.height;
-			}
-		};
-		return listener;
-	}
-
-	// returns a disappeared list view containing all the member records for a given type -- NOT
 	//NOTE: constructing the adapter may take some time -- consider doing asynchronously -- NOT
 	private ArrayList<HashMap<String, String>> getMemberList(String memberType){
-//		ListView lView = new ListView(this);
-		
-		// this block necessary to allow scrolling of listview that's a descendant of a scrollView element
-		// it has been commented that this only works if all list items are the same height
-		// if problems are encountered, see here: http://stackoverflow.com/questions/6210895/listview-inside-scrollview-is-not-scrolling-on-android/14577399#14577399
-	/*
-		lView.setOnTouchListener(new ListView.OnTouchListener() {
-	        @Override
-	        public boolean onTouch(View v, MotionEvent event) {
-	            int action = event.getAction();
-	            switch (action) {
-	            case MotionEvent.ACTION_DOWN:
-	                // Disallow ScrollView to intercept touch events.
-	                v.getParent().requestDisallowInterceptTouchEvent(true);
-	                break;
-
-	            case MotionEvent.ACTION_UP:
-	                // Allow ScrollView to intercept touch events.
-	                v.getParent().requestDisallowInterceptTouchEvent(false);
-	                break;
-	            }
-
-	            // Handle ListView touch events.
-	            v.onTouchEvent(event);
-	            return true;
-	        }
-	    });
-		
-		LayoutParams lvLayparams = new LayoutParams(LayoutParams.MATCH_PARENT, 600);
-		lView.setLayoutParams(lvLayparams);
-		*/
 		ArrayList<HashMap<String, String>> memberList = new ArrayList<>();
 		OrdersRecord order = (OrdersRecord)currentRecord;
 		
 		// construct list of value hashes for display in expandable list
-		// key is meaningless, value is value that will be displayed therein
+		// key corresponds to to[] and from[] parameters, value is value that will be displayed therein
 		switch (memberType) {
 		case DbConstants.ORDERS:
 			memberList.add((HashMap<String, String>) order.valueMap);
@@ -404,30 +319,12 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			}
 			break;
 		case DbConstants.CUSTOMERS:
-			/*
-			HashMap<String, String> childData = new HashMap<>();
-			childData.put(KEY_CHILD_TITLE1, order.customer.valueMap.get(Customers.COLUMN_NAME_FIRST_NAME));
-			childData.put(KEY_CHILD_TITLE2, order.customer.valueMap.get(Customers.COLUMN_NAME_LAST_NAME));
-			childData.put(KEY_CHILD_SUBTITLE1, order.customer.valueMap.get(Customers.COLUMN_NAME_ADDRESS));
-			childData.put(KEY_CHILD_SUBTITLE2, null);
-			*/
 			memberList.add((HashMap<String, String>) order.customer.valueMap);
 			break;
 
 		default:
 			break;
 		}
-		/*
-		for(Object rec:members.toArray()){
-			DatabaseRecord memberRec = (DatabaseRecord)rec;
-			memberList.add(memberRec.valueMap);
-		}
-		
-		SimpleAdapter adapter = new SimpleAdapter(this,memberList , listItemLayoutId, fromColumns, toFields);
-		lView.setAdapter(adapter);
-		lView.setOnItemClickListener(new MemberOpenListener());
-//		lView.setVisibility(View.GONE); 
-		 */
 		return memberList;
 	}
 	
@@ -456,6 +353,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		
 	}
 
+	/*
 	private LinearLayout getMemberGroupHeader(final ViewGroup parent, int titleId) {
 		LinearLayout groupHeader = new LinearLayout(this);
 		groupHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -504,7 +402,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		toggler.setTextSize(22);
 		return toggler;
 	}
-
+*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -628,10 +526,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				phoneLabels[0] = getString(R.string.workers_phone1_hint)+": "+((TextView)findViewById(phoneFields[0])).getText();
 				phoneLabels[1] = getString(R.string.workers_phone2_hint)+": "+((TextView)findViewById(phoneFields[1])).getText();
 				break;
-			case DbConstants.PRODUCTS:
-				// nothing to do
-				break;
-
 			default:
 				break;
 			}
@@ -759,10 +653,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	}
 
 	@Override
-	public void onDialogNegativeClick(DialogFragment dialog) {
-	
-		
-	}
+	public void onDialogNegativeClick(DialogFragment dialog) {}
 	
 	@Override
 	protected void onDestroy() {

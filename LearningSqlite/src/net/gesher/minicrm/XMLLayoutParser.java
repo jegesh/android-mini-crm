@@ -49,7 +49,7 @@ public class XMLLayoutParser {
 						boolean reachedEnd = false;
 						int total = parser.getAttributeCount();
 						int attCounter = 0;
-						if(activity instanceof InputFormActivity){
+						if(activity instanceof NewRecordFormActivity){
 							while(!reachedEnd && attCounter<total){
 
 								attCounter++;

@@ -62,6 +62,8 @@
 	<string name="message_worker_added">Worker Added</string>
 	<string name="message_product_added">Product added</string>
 	<string name="message_no_email">No valid email address available</string>
+	<string name="message_changes_saved">Changes saved</string>
+	<string name="message_error_saving">An error occurred.\n<b>Changes were not saved</b></string>
 	<string name="btn_hide_orders_member">Hide</string>
 	<string name="btn_show_orders_member">Show</string>
 	<string name="nav_drawer_open">Open</string>

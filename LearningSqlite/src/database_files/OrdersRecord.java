@@ -268,8 +268,8 @@ public class OrdersRecord extends DatabaseRecord {
 		try{
 			super.updateRecord(DbConstants.ORDERS_COLUMNS, values);
 		}catch(Exception e){
-		//	Toast.makeText(InputFormActivity.this, text, duration)
-			Log.d(InputFormActivity.TAG, e.getMessage());
+		//	Toast.makeText(NewRecordFormActivity.this, text, duration)
+			Log.d(NewRecordFormActivity.TAG, e.getMessage());
 		}
 	}*/
 	

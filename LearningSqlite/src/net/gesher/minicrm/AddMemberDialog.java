@@ -51,8 +51,8 @@ public class AddMemberDialog extends DialogFragment implements OnItemSelectedLis
 	        // set title and form context in accordance with button that opened the dialog
 	        
 	        initialization = true;
-	        if(getActivity() instanceof InputFormActivity){
-	        	switch (((InputFormActivity)getActivity()).addedComponentDomain) {
+	        if(getActivity() instanceof NewRecordFormActivity){
+	        	switch (((NewRecordFormActivity)getActivity()).addedComponentDomain) {
 		        	case "customers":
 		        		Log.d("in switch", "customers");
 		        		dialogTitle = R.string.button_add_new_customer;

@@ -2,11 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.learningsqlite.CustomersNewRecordForm" >
 
-    <item android:id="@+id/menu_item_edit_record"
-        android:orderInCategory="1"
-        android:showAsAction="always"
-        android:title="@string/menu_item_edit_record"
-        android:icon="@drawable/ic_action_edit"/>
+    
     <item android:id="@+id/menu_item_delete_record"
         android:orderInCategory="2"
         android:showAsAction="ifRoom"

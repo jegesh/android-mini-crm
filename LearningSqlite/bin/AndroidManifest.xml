@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.gesher.minicrm.InputFormActivity"
+            android:name="net.gesher.minicrm.NewRecordFormActivity"
             android:label="@string/title_activity_orders_new_record">
             
         </activity>
