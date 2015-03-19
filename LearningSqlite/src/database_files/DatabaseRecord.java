@@ -62,7 +62,8 @@ public abstract class DatabaseRecord {
     }
 
     public void saveDataToObject(Activity activity){
-		valueMap = new HashMap<String,String>();
+    	if(valueMap == null)
+    		valueMap = new HashMap<String,String>();
     	for(Entry<Integer,String> e:inputIdsToColumns.entrySet()){
 
     		Log.d(TAG, "Entry key: "+e.getKey()+", Entry value: "+e.getValue());

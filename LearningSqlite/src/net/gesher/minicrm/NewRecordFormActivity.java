@@ -445,7 +445,7 @@ public class NewRecordFormActivity extends Activity implements NoticeDatePickerD
 	}
 	
 	public void addRecordMember(View v){
-		// turn it into a 'fragment' when adding cust/prod/worker from within other domain
+		//TODO turn it into a 'fragment' when adding cust/prod/worker from within other domain
 		addedComponentDomain = (String) v.getTag();
 		dialog = new AddMemberDialog();
 		dialog.show(getFragmentManager(), "dialog " + addedComponentDomain);
@@ -501,7 +501,7 @@ public class NewRecordFormActivity extends Activity implements NoticeDatePickerD
 		Cursor c = record.db.query(Products.TABLE_NAME, null, 
 				null, null, Products.COLUMN_NAME_SELL_BY_UNIT, null, null); // new String[]{Products.COLUMN_NAME_SELL_BY_UNIT} 
 		SimpleCursorAdapter priceUnitAdapter = new SimpleCursorAdapter(activity, android.R.layout.simple_spinner_item, c, new String[]{Products.COLUMN_NAME_SELL_BY_UNIT}, new int[]{android.R.id.text1}, 0);
-		priceUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		priceUnitAdapter.setDropDownViewResource(R.layout.add_member_spinner_item);
 		spinner.setAdapter(priceUnitAdapter);
 	}
 	
@@ -579,7 +579,7 @@ public class NewRecordFormActivity extends Activity implements NoticeDatePickerD
 			Toast.makeText(this, getString(R.string.message_worker_added), Toast.LENGTH_SHORT).show();
 			break;
 		}
-		// in case orders record was edit, do this not to lose changes when repopulating fields
+		// in case orders record was edited, do this not to lose changes when repopulating fields
 	//	((OrdersRecord)record).saveBasicFieldsToObject(this);
 		
 	//	populateFields();

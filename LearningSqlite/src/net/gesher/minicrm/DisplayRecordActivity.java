@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.gesher.minicrm.ConfirmDeletionDialog.NoticeDialogListener;
 import net.gesher.minicrm.PhonePickerFragment.PhoneDialogListener;
@@ -29,6 +30,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -41,6 +43,7 @@ import database_files.CustomersRecord;
 import database_files.DatabaseRecord;
 import database_files.DbConstants;
 import database_files.JobsProductsContract.JobsProducts;
+import database_files.OrdersContract;
 import database_files.OrdersRecord;
 import database_files.ProductsContract.Products;
 import database_files.ProductsRecord;
@@ -60,6 +63,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	public static final String TAG = "DisplayRecord";
 	
 	public DatabaseRecord currentRecord;
+	int groupsCode = 0;
 	public int[] phoneFields;
 	public String[] phoneLabels;
 	int selectedPhoneIndex;
@@ -146,17 +150,19 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		@Override
 		public void onClick(View v) {
 			String content = "";
-			switch ((String)v.getTag()) {
-			case TAG_SELL_UNIT: // products sell-by unit spinner
-				Spinner spinner = (Spinner)edit;
-				content = ((TextView)spinner.getSelectedView()).getText().toString();
-				break;
+			if(v.getTag() != null){
+				switch ((String)v.getTag()) {
+				case TAG_SELL_UNIT: // products sell-by unit spinner
+					Spinner spinner = (Spinner)edit;
+					content = ((TextView)spinner.getSelectedView()).getText().toString();
+					break;
 
-			default:
+				default:
+					break;
+				}
+			}else{
 				content = ((EditText)edit).getText().toString();
-				
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-				break;
 			}
 			currentRecord.valueMap.put(column, content);
 			if(currentRecord.updateRecord(currentRecord.valueMap))
@@ -243,6 +249,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			
 			// code to handle customer info
 			if(oRecord.customer!=null){
+				groupsCode += 1;
 				HashMap<String, String> custHeaderMap = new HashMap<>();
 				custHeaderMap.put(KEY_MEMBER_TITLE, getString(R.string.label_customer_info));
 				custHeaderMap.put(KEY_MEMBER_COUNT, null);
@@ -254,6 +261,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			
 			// code to handle display of products
 			if(oRecord.products.size()>0){
+				groupsCode += 2;
 				HashMap<String, String> prodHeaderMap = new HashMap<>();
 				prodHeaderMap.put(KEY_MEMBER_TITLE, getString(R.string.label_product_info));
 				prodHeaderMap.put(KEY_MEMBER_COUNT, Integer.toString(oRecord.products.size()));
@@ -264,6 +272,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			
 			// code to handle display of workers on job
 			if(oRecord.workers.size()>0){
+				groupsCode += 4;
 				HashMap<String, String> workersHeaderMap = new HashMap<>();
 				workersHeaderMap.put(KEY_MEMBER_TITLE, getString(R.string.label_workers_info));
 				workersHeaderMap.put(KEY_MEMBER_COUNT, Integer.toString(oRecord.workers.size()));
@@ -275,16 +284,22 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			String[] fromKeys = {KEY_MEMBER_TITLE,KEY_MEMBER_COUNT};
 			String[] fromChildrenKeys = {KEY_CHILD_TITLE1,KEY_CHILD_TITLE2,KEY_CHILD_SUBTITLE1,KEY_CHILD_SUBTITLE2};
 			int[] toChildFields = {R.id.field_title1,R.id.field_title2,R.id.field_subtitle1,R.id.field_subtitle2};
+			Map<Integer,String> custContentMap = null;
+			if(oRecord.customer != null)
+				custContentMap = oRecord.customer.displayIdsToColumns;
 			OrdersDisplayListAdapter adapter = new OrdersDisplayListAdapter(this, headerMapList, fromKeys, toFields, 
 					childDataList, R.layout.listview_item_3, fromChildrenKeys, toChildFields, oRecord.displayIdsToColumns,
-					oRecord.customer.displayIdsToColumns);
+					custContentMap, groupsCode);
 			mListAdapter = adapter;
 			lView.setAdapter(adapter);
+			lView.setOnChildClickListener(new MemberOpenListener());
 			lView.setDividerHeight(3);
 			lView.expandGroup(0);
 	//		lView.setFocusable(false);
 		}
 	}
+	
+	
 		
 	
 	//NOTE: constructing the adapter may take some time -- consider doing asynchronously -- NOT
@@ -328,26 +343,46 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		return memberList;
 	}
 	
-	class MemberOpenListener implements OnItemClickListener{
+	class MemberOpenListener implements OnChildClickListener{
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View v, int position, long index) {
+		public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 			// TODO figure out a better way to do this
 			// current implementation makes too many assumptions, and depends on current configuration not changing
 			
+			// Here we are giving each possible section weight if it's present in order to determine which
+			// group was clicked
+			int custPosition, workerPosition, prodPosition;
+			OrdersRecord oRec = (OrdersRecord)currentRecord;
+			if(oRec.customer != null)
+				custPosition = 1;
+			else
+				custPosition = 0;
+			// following lines just in case we add something else after workers in the future
+			if(oRec.workers.size() > 0)
+				workerPosition = 1;
+			else
+				workerPosition = 0;
+			if(oRec.products.size() > 0)
+				prodPosition = 1;
+			else
+				prodPosition = 0;
+			
 			String domain = "";
 			DatabaseRecord member = null;
-			if(((View)parent.getParent()).getId() == R.id.orders_workers_fragment_container){
+			if(groupPosition == custPosition + prodPosition + 1 && oRec.workers.size() > 0){
 				domain = DbConstants.WORKERS;
-				member = ((OrdersRecord)currentRecord).workers.get(position);
-			}else{
+				member = ((OrdersRecord)currentRecord).workers.get(childPosition);
+			}else if(groupPosition == custPosition + 1 && oRec.products.size() > 0){
 				domain = DbConstants.PRODUCTS;
-				member = ((OrdersRecord)currentRecord).products.get(position);
-			}
+				member = ((OrdersRecord)currentRecord).products.get(childPosition);
+			}else
+				return false;
 			Intent intent = new Intent(getBaseContext(), DisplayRecordActivity.class);
 			intent.putExtra(ViewDbActivity.DOMAIN, domain);
 			intent.putExtra(ViewDbActivity.RECORD_ID, member.recordId);
 			startActivity(intent);
+			return true;
 		}
 
 		

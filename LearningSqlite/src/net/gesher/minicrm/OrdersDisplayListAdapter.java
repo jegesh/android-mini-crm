@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import database_files.CustomersContract.Customers;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -38,6 +41,7 @@ public class OrdersDisplayListAdapter extends BaseExpandableListAdapter {
 	private int[] mChildTo;
 
 	private LayoutInflater mInflater;
+	private int groups;
 
 
 	public OrdersDisplayListAdapter(Context context,
@@ -81,16 +85,25 @@ public class OrdersDisplayListAdapter extends BaseExpandableListAdapter {
 		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
+	/*
+	 *  This is the constructor to use for full functionality. If no customer has been assigned to the job, set last parameter to null.
+	 */
 	public OrdersDisplayListAdapter(Context context,List<? extends Map<String, ?>> groupData,  String[] groupFrom, int[] groupTo,
 			List<? extends List<? extends Map<String, ?>>> childData, int childLayout, String[] childFrom, int[] childTo, 
-					Map<Integer, String> orderContentMap, Map<Integer, String> custContentMap) {
+					Map<Integer, String> orderContentMap, Map<Integer, String> custContentMap, int groupsCode) {
 		this(context, groupData, R.layout.orders_display_members_header, groupFrom, groupTo, childData, childLayout, childFrom, childTo);
+		
+		if(custContentMap != null){
+			this.customerContentIds = new Integer[custContentMap.size()];
+			custContentMap.keySet().toArray(this.customerContentIds);
+			this.customerContentIdsToColumns = (HashMap<Integer, String>) custContentMap;
+		}
+		
 		this.orderContentIds = new Integer[orderContentMap.size()];
-		this.customerContentIds = new Integer[custContentMap.size()];
 		orderContentMap.keySet().toArray(this.orderContentIds);
-		custContentMap.keySet().toArray(this.customerContentIds);
+		groups = groupsCode;
 		this.orderContentIdsToColumns = (HashMap<Integer, String>) orderContentMap;
-		this.customerContentIdsToColumns = (HashMap<Integer, String>) custContentMap;
+		
 		
 	}
 
@@ -102,27 +115,18 @@ public class OrdersDisplayListAdapter extends BaseExpandableListAdapter {
 		return childPosition;
 	}
 
+	@SuppressLint("InflateParams")
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
 			View convertView, ViewGroup parent) {
 		View v = null;
-		switch (groupPosition) {
-		case GROUP_ORDER_DETAILS:
+		
+		if(groupPosition == GROUP_ORDER_DETAILS)
 			v = mInflater.inflate(R.layout.orders_display_expandable_list_child, null);
-			break;
-		case GROUP_CUSTOMER:
+		else if(groupPosition == GROUP_CUSTOMER && groups/2*2 != groups)
 			v = mInflater.inflate(R.layout.customer_display_list_child, null);
-			break;
-
-		case GROUP_PRODUCTS:
+		else
 			v = mInflater.inflate(R.layout.listview_item_3, null);
-			break;
-
-		case GROUP_WORKERS:
-			v = mInflater.inflate(R.layout.listview_item_3, null);
-			break;
-		}
-		if(v == null)
-			Log.d("Adapter class", "View is null");
+		
 		bindView(v, mChildData.get(groupPosition).get(childPosition), mChildFrom, mChildTo, groupPosition);
 		
 		return v;
@@ -136,30 +140,21 @@ public class OrdersDisplayListAdapter extends BaseExpandableListAdapter {
 	private void bindView(View view, Map<String, ?> data, String[] from, int[] to, int groupPosition) {
 	//	XMLLayoutParser parser = new XMLLayoutParser(activity);
 		
-		switch (groupPosition) {
-		case GROUP_ORDER_DETAILS:
+		if(groupPosition == GROUP_ORDER_DETAILS)
 			for(Entry<Integer,String> e:orderContentIdsToColumns.entrySet()){
 				TextView txtView = (TextView)view.findViewById((int) e.getKey());
 				if(txtView != null)
 					txtView.setText( (CharSequence) data.get(e.getValue()));
 			}
-			break;
-		case GROUP_CUSTOMER:
+		else if(groupPosition == GROUP_CUSTOMER && groups/2*2 != groups)
 			for(Entry<Integer, String> e:customerContentIdsToColumns.entrySet()){
 				TextView txtView = (TextView)view.findViewById((int) e.getKey());
 				if(txtView != null)
 					txtView.setText( (CharSequence) data.get(e.getValue()));
 			}
-			break;
-
-		case GROUP_PRODUCTS:
+		else
 			bindViewDefault(view, data, from, to);
-			break;
-
-		case GROUP_WORKERS:
-			bindViewDefault(view, data, from, to);
-			break;
-		}
+		
 		
 	}
 

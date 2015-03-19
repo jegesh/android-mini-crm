@@ -65,11 +65,7 @@ public class MainActivity extends Activity {
 				return null;
 			}
 		};
-		
 		task.execute(null,null,null);
-		
-		
-		
 	}
 	
 	@Override

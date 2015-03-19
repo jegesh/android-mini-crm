@@ -165,6 +165,8 @@ public class OrdersRecord extends DatabaseRecord {
 				customer.insertNewRecord();
 			valueMap.put(Orders.COLUMN_NAME_CUSTOMER_ID, customer.recordId);
 
+		}else{
+			valueMap.put(Orders.COLUMN_NAME_CUSTOMER_ID, null);
 		}
 	}
 
@@ -255,11 +257,11 @@ public class OrdersRecord extends DatabaseRecord {
 	@Override
 	protected void setDisplayIdsToColumns() {
 		displayIdsToColumns.put(R.id.header_orders_display, Orders.COLUMN_NAME_TITLE);
-		/*
+		
 		displayIdsToColumns.put(R.id.content_order_date_ordered, Orders.COLUMN_NAME_ORDER_DATE);
 		displayIdsToColumns.put(R.id.content_order_target_date, Orders.COLUMN_NAME_FILL_BY_DATE);
 		displayIdsToColumns.put(R.id.content_orders_address, Orders.COLUMN_NAME_ADDRESS);
-		*/
+		
 	}
 	
 	/*

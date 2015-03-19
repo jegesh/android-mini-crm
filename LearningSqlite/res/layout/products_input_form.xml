@@ -38,6 +38,7 @@
         android:layout_width="0dp"
         android:layout_weight="1"
 	    android:id="@+id/products_input_sale_unit_spinner"
+	    
 	    />
     <EditText android:id="@+id/products_input_new_sale_unit"
         style="@style/FormInputs"
