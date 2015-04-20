@@ -11,15 +11,18 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -39,6 +42,7 @@ public class AddMemberDialog extends DialogFragment implements OnItemSelectedLis
 		int[] toElements;
 		SimpleCursorAdapter cAdapter;
 		public String addedMemberId;
+		public String productAmount;
 		Spinner spinner;
 	    // Use this instance of the interface to deliver action events
 	    AddMemberDialogListener mListener;
@@ -89,13 +93,19 @@ public class AddMemberDialog extends DialogFragment implements OnItemSelectedLis
 
 	        // Inflate and set the layout for the dialog
 	        // Pass null as the parent view because its going in the dialog layout
-	        builder.setView(inflater.inflate(R.layout.add_customer_dialog_layout, null))
+	        builder.setView(inflater.inflate(R.layout.add_member_dialog, null))
 	               .setPositiveButton(R.string.button_accept_added_component, new DialogInterface.OnClickListener() {
 	                   @Override
 	                   public void onClick(DialogInterface dialog, int id) {
-	                	   if(dbCursor.getCount()<1)
+	                	   if(dbCursor.getCount()<1){
 	                		   Toast.makeText(getActivity(), getString(unavailableMemberMsgId), Toast.LENGTH_SHORT).show();
-	                	   mListener.onAddMemberAcceptClickListener();
+	                		   // TODO perhaps skip the dialog if no members are existant in db, and instead open a new member form?
+	                	   }else{
+	                		   if(getActivity() instanceof NewRecordFormActivity){
+	               	        		productAmount = ((EditText)getDialog().findViewById(R.id.add_member_amount)).getText().toString();
+	                		   }
+	                		   mListener.onAddMemberAcceptClickListener();
+	                	   }
 	                   }
 	               })
 	               .setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
@@ -126,13 +136,17 @@ public class AddMemberDialog extends DialogFragment implements OnItemSelectedLis
 	            mListener = (AddMemberDialogListener) activity;
 	        } catch (ClassCastException e) {
 	            // The activity doesn't implement the interface, throw exception
-	            throw new ClassCastException(activity.toString() + " must implement Listener interface");
+	            throw new ClassCastException(activity.toString() + " must implement AddMemberDialogListener interface");
 	        }
 	    }
 	    
 	    @Override
 	    public void onResume() {
 	    	spinner = (Spinner)getDialog().findViewById(R.id.add_component_spinner);
+	    	if(getActivity() instanceof NewRecordFormActivity){
+	        	if(((NewRecordFormActivity)getActivity()).addedComponentDomain.equals(getString(R.string.domain_products)))
+	        		getDialog().findViewById(R.id.add_member_amount).setVisibility(View.VISIBLE);
+	    	}
 	        if(dbCursor.moveToFirst()){
 	        	/*
 	        	cAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_spinner_item, dbCursor, fromFields, toElements, 0);
@@ -153,7 +167,9 @@ public class AddMemberDialog extends DialogFragment implements OnItemSelectedLis
 		        spinAdapt.setDropDownViewResource(R.layout.add_member_dropdown_item);
 		        spinner.setAdapter(spinAdapt);
 	        }else{
-	        	spinner.setVisibility(View.GONE); // TODO set prompt to message: no items available
+	        	getDialog().dismiss();
+	        	mListener.onAddMemberNewClickListener();
+	        	
 	        }
 	        super.onResume();
 	    }
@@ -178,7 +194,7 @@ public class AddMemberDialog extends DialogFragment implements OnItemSelectedLis
 				dbCursor.moveToPosition(position);
 				addedMemberId = dbCursor.getString(0);
 			
-				Toast.makeText(parent.getContext(),"record id: "+dbCursor.getString(0) , Toast.LENGTH_SHORT).show();
+			//	Toast.makeText(parent.getContext(),"record id: "+dbCursor.getString(0) , Toast.LENGTH_SHORT).show();
 			}
 		}
 

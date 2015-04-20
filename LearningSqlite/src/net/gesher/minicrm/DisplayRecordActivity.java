@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -61,6 +62,8 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	public static final String TAG_SELL_UNIT = "sell_unit";
 	public static final String DELETION_DIALOG_FRAG_TAG = "deletion dialog";
 	public static final String TAG = "DisplayRecord";
+	private static final String KEY_PRODUCT_AMOUNT = "product amount";
+	public static final String KEY_PRODUCT_PARENT_ID = "parent id";
 	
 	public DatabaseRecord currentRecord;
 	int groupsCode = 0;
@@ -120,6 +123,12 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			break;
 		}
 		setContentView(currentRecord.displayLayoutId);
+		if(getIntent().hasExtra(KEY_PRODUCT_AMOUNT)){ // this record is a product in an order
+			((ProductsRecord)currentRecord).orderId = getIntent().getStringExtra(KEY_PRODUCT_PARENT_ID);
+			((ProductsRecord)currentRecord).amount = getIntent().getStringExtra(KEY_PRODUCT_AMOUNT);
+			findViewById(R.id.products_amount_container).setVisibility(View.VISIBLE);
+			
+		}
 		if(currentRecord instanceof OrdersRecord){
 			lView = (ExpandableListView)findViewById(R.id.orders_display_members_list);
 			
@@ -164,7 +173,12 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				content = ((EditText)edit).getText().toString();
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 			}
-			currentRecord.valueMap.put(column, content);
+			if(column != null)
+				currentRecord.valueMap.put(column, content);
+			else{
+				if(getIntent().hasExtra(KEY_PRODUCT_AMOUNT)) // clicked to save product amount, which is not part of the record's value map
+					((ProductsRecord)currentRecord).amount = content;
+			}
 			if(currentRecord.updateRecord(currentRecord.valueMap))
 				Toast.makeText(getBaseContext(), getString(R.string.message_changes_saved), Toast.LENGTH_SHORT).show();
 			else
@@ -206,7 +220,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 	}
 
 	private void replaceFieldWithEditable(View editableField, ImageView button) {
-		LinearLayout parent = (LinearLayout) button.getParent();
+		ViewGroup parent = (ViewGroup) button.getParent();
 		TextView fieldTxt = (TextView) parent.getChildAt(0);
 		fieldContent = fieldTxt.getText().toString();
 		fieldTxt.setVisibility(View.GONE);
@@ -282,8 +296,8 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			}
 			int[] toFields = {R.id.field_title1,R.id.field_title2};
 			String[] fromKeys = {KEY_MEMBER_TITLE,KEY_MEMBER_COUNT};
-			String[] fromChildrenKeys = {KEY_CHILD_TITLE1,KEY_CHILD_TITLE2,KEY_CHILD_SUBTITLE1,KEY_CHILD_SUBTITLE2};
-			int[] toChildFields = {R.id.field_title1,R.id.field_title2,R.id.field_subtitle1,R.id.field_subtitle2};
+			String[] fromChildrenKeys = {KEY_CHILD_TITLE1,KEY_CHILD_TITLE2,KEY_CHILD_SUBTITLE1,KEY_CHILD_SUBTITLE2,KEY_PRODUCT_AMOUNT};
+			int[] toChildFields = {R.id.field_title1,R.id.field_title2,R.id.field_subtitle1,R.id.field_subtitle2,R.id.products_display_amount};
 			Map<Integer,String> custContentMap = null;
 			if(oRecord.customer != null)
 				custContentMap = oRecord.customer.displayIdsToColumns;
@@ -296,6 +310,9 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			lView.setDividerHeight(3);
 			lView.expandGroup(0);
 	//		lView.setFocusable(false);
+		} else if(currentRecord instanceof ProductsRecord){
+			((TextView)findViewById(R.id.products_display_amount)).setText(((ProductsRecord)currentRecord).amount);
+			((TextView)findViewById(R.id.products_content_notes)).setText(((ProductsRecord)currentRecord).valueMap.get(Products.COLUMN_NAME_NOTES));
 		}
 	}
 	
@@ -320,6 +337,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				childData.put(KEY_CHILD_TITLE2, rec.valueMap.get(Products.COLUMN_NAME_SUBTITLE));
 				childData.put(KEY_CHILD_SUBTITLE1, rec.valueMap.get(Products.COLUMN_NAME_PRICE_PER_UNIT));
 				childData.put(KEY_CHILD_SUBTITLE2, rec.valueMap.get(JobsProducts.COLUMN_NAME_AMOUNT));
+				childData.put(KEY_PRODUCT_AMOUNT, ((ProductsRecord)rec).amount);
 				memberList.add(childData);
 			}
 			break;
@@ -330,6 +348,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				childData.put(KEY_CHILD_TITLE2, rec.valueMap.get(Workers.COLUMN_NAME_LAST_NAME));
 				childData.put(KEY_CHILD_SUBTITLE1, rec.valueMap.get(Workers.COLUMN_NAME_OCCUPATION));
 				childData.put(KEY_CHILD_SUBTITLE2, null);
+				childData.put(KEY_PRODUCT_AMOUNT, null);
 				memberList.add(childData);
 			}
 			break;
@@ -358,7 +377,7 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 				custPosition = 1;
 			else
 				custPosition = 0;
-			// following lines just in case we add something else after workers in the future
+			// the following lines are just in case we add something else after workers in the future
 			if(oRec.workers.size() > 0)
 				workerPosition = 1;
 			else
@@ -370,15 +389,18 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 			
 			String domain = "";
 			DatabaseRecord member = null;
+			Intent intent = new Intent(getBaseContext(), DisplayRecordActivity.class);
 			if(groupPosition == custPosition + prodPosition + 1 && oRec.workers.size() > 0){
 				domain = DbConstants.WORKERS;
 				member = ((OrdersRecord)currentRecord).workers.get(childPosition);
 			}else if(groupPosition == custPosition + 1 && oRec.products.size() > 0){
 				domain = DbConstants.PRODUCTS;
 				member = ((OrdersRecord)currentRecord).products.get(childPosition);
+				intent.putExtra(KEY_PRODUCT_AMOUNT, ((ProductsRecord)member).amount);
+				intent.putExtra(KEY_PRODUCT_PARENT_ID, currentRecord.recordId);
 			}else
 				return false;
-			Intent intent = new Intent(getBaseContext(), DisplayRecordActivity.class);
+			
 			intent.putExtra(ViewDbActivity.DOMAIN, domain);
 			intent.putExtra(ViewDbActivity.RECORD_ID, member.recordId);
 			startActivity(intent);
@@ -388,56 +410,6 @@ public class DisplayRecordActivity extends Activity implements NoticeDialogListe
 		
 	}
 
-	/*
-	private LinearLayout getMemberGroupHeader(final ViewGroup parent, int titleId) {
-		LinearLayout groupHeader = new LinearLayout(this);
-		groupHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-		groupHeader.setOrientation(LinearLayout.HORIZONTAL);
-		TextView frameTitle = new TextView(this);
-		LinearLayout.LayoutParams titleLp =new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT);
-		titleLp.weight = 1;
-		frameTitle.setLayoutParams(titleLp);
-		frameTitle.setText(titleId);
-		frameTitle.setTextSize(24);
-		frameTitle.setTextColor(Color.BLUE);
-		groupHeader.addView(frameTitle);
-		Button toggler = getToggleButton();
-		toggler.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(parent.getVisibility()==View.VISIBLE){
-					parent.setVisibility(View.GONE);
-					toggleHideButtonText((Button)v);
-				}else{
-					parent.setVisibility(View.VISIBLE);
-					toggleHideButtonText((Button)v);
-				}
-
-			}
-		});
-		groupHeader.addView(toggler);
-		return groupHeader;
-	}
-
-	void toggleHideButtonText(Button b){
-		if(b.getText().toString().equals(getString(R.string.btn_hide_orders_member)))
-			b.setText(R.string.btn_show_orders_member);
-		else
-			b.setText(R.string.btn_hide_orders_member);
-	}
-
-
-	private Button getToggleButton() {
-		Button toggler = new Button(this);
-		LinearLayout.LayoutParams togglerLayout = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		//	togglerLayout.gravity = Gravity.RIGHT;
-		toggler.setLayoutParams(togglerLayout);
-		toggler.setText(R.string.btn_show_orders_member);
-		toggler.setTextSize(22);
-		return toggler;
-	}
-*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

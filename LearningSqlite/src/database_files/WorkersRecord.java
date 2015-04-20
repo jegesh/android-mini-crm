@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import database_files.JobWorkersContract.JobWorkers;
 import database_files.WorkersContract.Workers;
 
 import net.gesher.minicrm.R;
@@ -78,6 +79,11 @@ public class WorkersRecord extends DatabaseRecord {
     	valueMap.put(Workers.COLUMN_NAME_RELATIONSHIP, (String)sp.getSelectedItem());
 	}
 
+	@Override
+	public void deleteRecord() {
+		db.delete(JobWorkers.TABLE_NAME, JobWorkers.COLUMN_NAME_WORKERS_ID+"=?", new String[]{recordId});
+		super.deleteRecord();
+	}
 
 	@Override
 	protected void setInputIdsToColumns() {

@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -45,6 +46,9 @@ public abstract class DatabaseRecord {
             for(int i = 0; i<c.getColumnNames().length;i++)
                 map.put(c.getColumnNames()[i],c.getString(i));
             valueMap = map;
+        }else{
+        	// no data for this id, record has already been deleted
+        	throw new SQLiteConstraintException();
         }
         c.close();
     }

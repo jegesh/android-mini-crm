@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 <LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/orders_edit_form_container"
     android:padding="8dp" >
-    
+    <LinearLayout 
+        style="@android:style/ButtonBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="5dp">
+        <Button style=""
+            android:text="@string/save_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:onClick="saveRecordToDb"/>
+        <Button style="" 
+            android:text="@string/cancel_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:onClick="cancel"/>
+        
+    </LinearLayout>
     
 	<EditText style="@style/FormInputs"
 	    android:id="@+id/order_new_record_title"
@@ -65,59 +82,12 @@
 	    android:id="@+id/order_new_record_address"
 	    android:hint="@string/order_address_hint"
 	    />
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/orders_customer_fragment_container"></LinearLayout>
-    <Button 
-        android:id="@+id/btn_add_customer"
+    <ExpandableListView android:id="@+id/members_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_add_new_customer"
-        android:onClick="addRecordMember"
-        android:tag="@string/domain_customers"/>
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/orders_workers_fragment_container"></LinearLayout>
-    <Button 
-        android:id="@+id/btn_add_worker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_add_new_worker"
-        android:onClick="addRecordMember"
-        android:tag="@string/domain_workers"/>
-    <LinearLayout android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content"
-        android:id="@+id/orders_products_fragment_container"></LinearLayout>
-    <Button 
-        android:id="@+id/btn_add_product"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_add_new_product"
-        android:onClick="addRecordMember"
-        android:tag="@string/domain_products"/>
-    <LinearLayout 
-        style="@android:style/ButtonBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button style=""
-            android:text="@string/save_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:onClick="saveRecordToDb"/>
-        <Button style="" 
-            android:text="@string/cancel_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:onClick="cancel"/>
-        
-    </LinearLayout>
+        >
+	</ExpandableListView>
+    
     
     
 </LinearLayout>
-</ScrollView>

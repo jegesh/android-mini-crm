@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="3dp" >
+    <LinearLayout android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView android:id="@+id/title"
+            style="@style/DisplayContent"
+            />
+        <TextView android:id="@+id/subtitle"
+            style="@style/DisplayContent"
+            android:textColor="@android:color/secondary_text_dark"
+            />
+    </LinearLayout>
+    
+    <TextView android:id="@+id/member_amount"
+        style="@style/DisplayContent"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"/>
+    <ImageView android:src="@drawable/red_x"
+        android:layout_gravity="center_vertical"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:scaleType="fitCenter"
+        android:onClick="removeMember"
+        />
+	<TextView android:id="@+id/member_domain"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone"/>
+    <TextView android:id="@+id/member_record_id"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone"/>
+</LinearLayout>

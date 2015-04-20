@@ -87,7 +87,10 @@ public class OrdersRecord extends DatabaseRecord {
 		if(productsCursor.moveToFirst()){
 			for(int i = 0;i<productsCursor.getCount();i++){
 			try{
-				products.add(new ProductsRecord(productsCursor.getString(2), activity));
+				ProductsRecord pr = new ProductsRecord(productsCursor.getString(2), activity);
+				pr.amount = productsCursor.getString(3);
+				products.add(pr);
+				
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -104,10 +107,12 @@ public class OrdersRecord extends DatabaseRecord {
 	@Override
 	public void saveDataToObject(Activity activity) {
 		super.saveDataToObject(activity);
+		/*
 		// if customer member present
 		if(customer!=null){
 			customer.saveDataToObject(activity);
 		}
+		
 		if(products.size()>0){
 			LinearLayout productsContainer = (LinearLayout) activity.findViewById(R.id.orders_products_fragment_container);
 			for(int i = 0;i<productsContainer.getChildCount();i++){
@@ -122,6 +127,7 @@ public class OrdersRecord extends DatabaseRecord {
 				((WorkersRecord)workers.get(i)).saveDataToObject(singleContainer);
 			}
 		}
+		*/
 	}
 	
 	@Override
@@ -145,7 +151,7 @@ public class OrdersRecord extends DatabaseRecord {
 				ContentValues cv = DatabaseRecord.mapValuesToCV(valueMap);
 				recordId = Integer.toString((int)db.insert(tableName, null, cv));
 				Log.d(TAG, "step 2");
-				// step 3: update member records
+				// step 3-4: update member records
 				updateMembers();
 			} catch (Exception e) {
 				Log.d(TAG, "Error inserting new record: "+e.getMessage());
@@ -171,6 +177,7 @@ public class OrdersRecord extends DatabaseRecord {
 	}
 
 	void updateMembers() {
+		/*
 		// step 3a: workers
 		if(workers.size()>0)
 			for(int i = 0;i<workers.size();i++){
@@ -193,10 +200,11 @@ public class OrdersRecord extends DatabaseRecord {
 				else
 					p.insertNewRecord();
 			}
+		*/
 		
 		// step 4: commit associations to db
 		for(int i = 0;i<workers.size();i++){
-			if(((WorkersRecord)workers.get(i)).newlyAdded){
+			if((workers.get(i)).newlyAdded){
 				ContentValues wCV = new ContentValues();
 				wCV.put(JobWorkers.COLUMN_NAME_ORDERS_ID, this.recordId);
 				wCV.put(JobWorkers.COLUMN_NAME_WORKERS_ID, workers.get(i).recordId);
@@ -209,6 +217,7 @@ public class OrdersRecord extends DatabaseRecord {
 				pCV.put(JobsProducts.COLUMN_NAME_ORDERS_ID, this.recordId);
 				pCV.put(JobsProducts.COLUMN_NAME_PRODUCTS_ID, products.get(i).recordId);
 				pCV.put(JobsProducts.COLUMN_NAME_AMOUNT, products.get(i).amount);
+				db.insert(JobsProducts.TABLE_NAME, null, pCV);
 			}
 		}
 		
@@ -220,7 +229,7 @@ public class OrdersRecord extends DatabaseRecord {
 		if(removedProducts.size()>0){
 			for(int i = 0;i<removedProducts.size();i++){
 				String deletionId = removedProducts.get(i).recordId;
-				db.delete(Products.TABLE_NAME, Products._ID + " = ?", new String[]{deletionId});
+				db.delete(JobsProducts.TABLE_NAME, Products._ID + " = ?", new String[]{deletionId});
 			}
 		}
 		if(removedWorkers.size()>0){
@@ -244,6 +253,13 @@ public class OrdersRecord extends DatabaseRecord {
 			return false;
 		}
 		return true;
+	}
+	
+	@Override
+	public void deleteRecord() {
+		db.delete(JobsProducts.TABLE_NAME, JobsProducts.COLUMN_NAME_ORDERS_ID+"=?", new String[]{recordId});
+		db.delete(JobWorkers.TABLE_NAME, JobWorkers.COLUMN_NAME_ORDERS_ID+"=?", new String[]{recordId});
+		super.deleteRecord();
 	}
 
 	@Override

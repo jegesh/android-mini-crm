@@ -51,13 +51,7 @@
         android:layout_weight="0"
         android:onClick="addSaleUnit"/>
     </LinearLayout>
-	<TextView style="@style/DisplayLabel"
-        android:text="@string/products_notes_hint"/>
-    <View style="@style/minorHr"/>
-    <EditText style="@style/FormInputs"
-	    android:id="@+id/products_input_notes"
-		android:inputType="textMultiLine"
-	    />
+    
     <LinearLayout android:id="@+id/products_amount_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,13 +60,20 @@
     <TextView style="@style/DisplayLabel"
         android:text="@string/products_amount_hint"/>
     <View style="@style/minorHr"/>
-    
     <EditText style="@style/FormInputs"
 	    android:id="@+id/products_input_amount"
 		android:inputType="number"
 	    />
-    
     </LinearLayout>
+
+    	<TextView style="@style/DisplayLabel"
+        android:text="@string/products_notes_hint"/>
+    <View style="@style/minorHr"/>
+    <EditText style="@style/FormInputs"
+	    android:id="@+id/products_input_notes"
+		android:inputType="textMultiLine"
+	    />
+    
     <LinearLayout 
         style="@android:style/ButtonBar"
         android:id="@+id/products_edit_form_button_bar"

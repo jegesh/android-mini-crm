@@ -73,6 +73,31 @@
              android:tag="sell_unit"/>
     </LinearLayout>
     
+    <LinearLayout android:id="@+id/products_amount_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+    <TextView style="@style/DisplayLabel"
+        android:text="@string/products_amount_hint"/>
+    <View style="@style/minorHr"/>
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+    <TextView style="@style/FormInputs"
+	    android:id="@+id/products_display_amount"
+	    android:layout_width="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentStart="true"
+	    android:paddingLeft="50dp"
+	    android:paddingStart="50dp"
+	    />
+    <ImageView style="@style/BtnEditLine"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+    </LinearLayout>
+    
     <TextView style="@style/DisplayLabel"
         android:text="@string/products_notes_hint"/>
     <View style="@style/minorHr"/>
@@ -91,18 +116,5 @@
            />
     </LinearLayout>
     
-    <LinearLayout android:id="@+id/products_amount_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-    <TextView style="@style/DisplayLabel"
-        android:text="@string/products_amount_hint"/>
-    <View style="@style/minorHr"/>
-    <TextView style="@style/FormInputs"
-	    android:id="@+id/products_display_amount"
-	    />
-    </LinearLayout>
-
 </LinearLayout>
 </ScrollView>

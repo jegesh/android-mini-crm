@@ -61,10 +61,12 @@
         
     </style>
     <style name="BtnEditLine" parent="@android:style/Widget.ImageButton">
-        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:padding">3dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:src">@drawable/ic_action_edit_grey</item>
         <item name="android:onClick">editField</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
    	<style name="FormInputs">
@@ -72,8 +74,7 @@
 	    <item name="android:layout_height">wrap_content</item>
 	    <item name="android:inputType">textNoSuggestions</item>
 	    <item name="android:textSize">22sp</item>
-	    <item name="android:paddingBottom">5dp</item>
-	    <item name="android:paddingTop">5dp</item>
+	    <item name="android:padding">5dp</item>
 	    <item name="android:layout_marginBottom">5dp</item>
 	</style>
 	<style name="ListItemHeader" parent="@android:style/TextAppearance.DeviceDefault.Large">

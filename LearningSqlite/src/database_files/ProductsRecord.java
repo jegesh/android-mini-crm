@@ -1,8 +1,10 @@
 package database_files;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import database_files.JobsProductsContract.JobsProducts;
 import database_files.ProductsContract.Products;
 
 import net.gesher.minicrm.R;
@@ -13,6 +15,7 @@ import net.gesher.minicrm.R.string;
 
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -22,8 +25,9 @@ import android.widget.TextView;
 
 
 public class ProductsRecord extends DatabaseRecord {
-	String amount;
+	public String amount;
 	public boolean newlyAdded;
+	public String orderId;
 	
 	public ProductsRecord( Context activity){
 		super(ProductsContract.Products.TABLE_NAME,R.layout.products_input_form,R.layout.products_display_form,R.string.title_products_main); 
@@ -82,8 +86,26 @@ public class ProductsRecord extends DatabaseRecord {
 				valueMap.put(Products.COLUMN_NAME_SELL_BY_UNIT, (String) ((TextView)sp.getSelectedView()).getText());
 			else
 				valueMap.put(Products.COLUMN_NAME_SELL_BY_UNIT, (String)((EditText)activity.findViewById(R.id.products_input_new_sale_unit)).getText().toString());
+			amount = ((EditText)(activity.findViewById(R.id.products_input_amount))).getText().toString();
 		}
-
+	
+	@Override
+	public boolean updateRecord(Map<String, String> values) {
+		if(amount != null){
+			ContentValues cv = new ContentValues();
+			cv.put(JobsProducts.COLUMN_NAME_AMOUNT, amount);
+			db.update(JobsProducts.TABLE_NAME, cv, JobsProducts.COLUMN_NAME_ORDERS_ID+"=? AND "+JobsProducts.COLUMN_NAME_PRODUCTS_ID+"=?", 
+					new String[]{orderId,recordId});
+		}
+		return super.updateRecord(values);
+	}
+	
+	@Override
+	public void deleteRecord() {
+		db.delete(JobsProducts.TABLE_NAME, JobsProducts.COLUMN_NAME_PRODUCTS_ID+"=?", new String[]{recordId});
+		super.deleteRecord();
+	}
+	
 	@Override
 	protected void setInputIdsToColumns() {
 		inputIdsToColumns.put(R.id.products_input_title, Products.COLUMN_NAME_TITLE);

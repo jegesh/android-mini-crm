@@ -8,20 +8,40 @@
     android:padding="3dp"
     android:background="@color/list_group_child_background" >
     
-    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="horizontal">
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" 
+        android:orientation="horizontal"
+        android:paddingEnd="30dp"
+        android:paddingRight="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true">
 	    <TextView style="@style/ListItemHeader" 
 	        android:id="@+id/field_title1"
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
+	        android:paddingEnd="4dp"
 	        android:paddingRight="4dp"
 	        />
 	    <TextView style="@style/ListItemHeader"
 	        android:id="@+id/field_title2"
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
+	       android:paddingEnd="4dp"
 	       android:paddingRight="4dp"
 	        />
+	    
     </LinearLayout>
+    <TextView android:id="@+id/products_display_amount"
+	        android:layout_height="match_parent"
+	        android:layout_width="wrap_content"
+	        android:layout_margin="3dp"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentEnd="true"
+	        android:textSize="26sp"
+	        android:textColor="@android:color/holo_blue_dark"/>
+    </RelativeLayout>
 	<TextView 
         style="@style/ListItemSubheader"
         android:id="@+id/field_subtitle1"
