@@ -2,6 +2,8 @@ package net.gesher.minicrm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.parse.ParseObject;
+
 import database_files.GeneralDbHelper;
 
 //import com.example.learningsqlite.CustomersContract.Users;
@@ -51,7 +53,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		
 		instantiateDbTables();
 	}
 

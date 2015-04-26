@@ -30,4 +30,16 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>libs/Parse-1.8.1-javadoc</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Desktop/android%20resources/Parse/Parse-1.8.1-javadoc</locationURI>
+		</link>
+		<link>
+			<name>libs/ParseCrashReporting-1.8.1-javadoc</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Desktop/android%20resources/Parse/ParseCrashReporting-1.8.1-javadoc</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -11,14 +11,7 @@
     <string name="cab_menu_delete_button">Delete Selected</string>
     <string name="menu_option_delete">Delete</string>
     <string name="add_record_button">New Record</string>
-    <string name="view_db_button">View Database</string>
-    
-    <string name="menu_suppliers_button">Suppliers/Subcontractors</string>
-    <string name="menu_orders_button">Orders/Projects</string>
-    <string name="menu_customers_button">Customers</string>
-    <string name="menu_workers_button">Employees</string>
-    <string name="menu_products_button">Products/Services</string>
-    <string name="menu_bids_button">Bids/Price Quotes</string>
+
     <string name="action_settings">Settings</string>
     <string name="title_orders_main">Orders</string>
     <string name="title_workers_main">Workers</string>
