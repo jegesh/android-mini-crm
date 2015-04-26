@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ניהול עסק קטן</string>
+    <string name="hello_world">hi whirled</string>
+    
+    <!-- main activity button and menu text -->
+    <string name="save_button">שמירה</string>
+    <string name="save_changes_button">שמור שינויים</string>
+    <string name="cancel_button">ביטול</string>
+    <string name="cab_menu_delete_button">מחק ערכים נבחרים</string>
+    <string name="menu_option_delete">מחיקה</string>
+    <string name="add_record_button">רשומה חדשה</string>
+
+    <string name="action_settings">הגדרות</string>
+    <string name="title_orders_main">הזמנות</string>
+    <string name="title_workers_main">עובדים</string>
+    <string name="title_suppliers_main">ספקים</string>
+    <string name="title_customers_main">לקוחות</string>
+    <string name="title_products_main">מוצרים</string>
+    <string name="menu_item_search">חיפוש</string>
+    <string name="list_view_selecting_hint">לחיצה פותחת רשומה, לחיצה ארוכה לבחור למחיקה</string>
+    <string name="empty_list_suggestion">עוד לא הוספת שום דבר! לחצו על \'+\' כדי להתחיל</string>
+	<string name="menu_item_edit_record">עריכה</string>
+	<string name="menu_item_call">חייג בטלפון</string>
+	<string name="menu_item_email">שלח דואל</string>
+	<string name="deletion_menu_title">פריטים נבחרו</string>
+	<string name="deletion_confirmation_message">למחוק את הרשומה/ות?</string>
+	<string name="deletion_affirmation_button">כן</string>
+	<string name="deletion_cancelation_button">לא</string>
+	<string name="btn_confirm">אישור</string>
+	<string name="btn_cancel">ביטול</string>
+	<string name="unavailable_feature_message">פונקציה זאת לא זמינה בגירסה זאת. היא תהיה זמינה בקרוב</string>
+	<string name="unavailable_feature_confirmation_button">הבנתי</string>
+	<string name="menu_item_sort_order">שנה סדר רשומות</string>
+	<string name="button_add_new_customer">הוסף לקוח</string>
+	<string name="record_saved_success_message">הרשומה נשמרה</string>
+    <string name="record_saved_failure_message">אירעה שגיאה, הרשומה לא נשמרה</string>
+    <string name="record_update_success_message">העדכון נשמר</string>
+    <string name="record_update_failure_message">אירעה שגיאה, העדכון לא נשמר</string>
+	<string name="button_edit_customer">ערוך פרטי לקוח</string>
+	<string name="button_add_new_worker">הוסף עובד</string>
+	<string name="button_add_new_product">הוסף מוצר</string>
+	<string name="button_accept_added_component">אישור</string>
+	<string name="button_add_new_component_from_dialog">צור חדש</string>
+	<string name="domain_customers">customers</string>
+	<string name="domain_products">products</string>
+	<string name="domain_workers">workers</string>
+	<string name="message_no_phone_number">לא נמצא מספר טלפון תקין</string>
+	<string name="message_no_products">אין מוצרים שמורים</string>
+	<string name="message_no_customers">אין לקוחות שמורים</string>
+	<string name="message_no_workers">אין עובדים שמורים</string>
+	<string name="message_customer_added">לקוח הוסף</string>
+	<string name="message_worker_added">עובד הוסף</string>
+	<string name="message_product_added">מוצר הוסף</string>
+	<string name="message_no_email">לא נמצא כתובת דואל תקינה</string>
+	<string name="message_changes_saved">השינויים נשמרו</string>
+	<string name="message_error_saving">אירעה שגיאה.\n<b>לא נשמרו השינויים</b></string>
+	<string name="btn_hide_orders_member">הסתר</string>
+	<string name="btn_show_orders_member">הצג</string>
+	<string name="nav_drawer_open">פתיחה</string>
+	<string name="nav_drawer_close">סגירה</string>
+    
+    <!-- individual domain strings -->
+    <string name="title_activity_view_db"></string>
+    <string name="title_activity_orders_new_record">הזמנה חדשה</string>
+    <string name="title_activity_customers_new_record_form">לקוח חדש</string>
+    <string name="title_activity_order_edit">עריכת הזמנה</string>
+    <string name="title_activity_customer_edit">עריכת פרטי לקוח</string>
+    <string name="title_workers_edit">עריכת פרטי עובד</string>
+    <string name="title_workers_new_record">עובד חדש</string>
+    <string name="title_products_edit">עריכת פרטי מוצר</string>
+    <string name="title_products_new_record">מוצר חדש</string>
+    <string-array name="workers_occupations">
+        <item >עובד</item>
+        <item>קבלן משנה</item>
+        <item>קולגה</item>
+        <item >אחר</item>
+    </string-array>
+    <string-array name="domain_list">
+        <item >הזמנות</item>
+        <item >לקוחות</item>
+        <item >מוצרים</item>
+        <item >עובדים</item>
+        <!--  
+        <item >הצעות מחיר</item>
+        <item >מכירות</item>
+        -->
+    </string-array>
+
+    <!-- form input hints -->
+    <string name="order_title_hint">כותרת ההזמנה</string>
+    <string name="order_customer_hint">מי הזמין?</string>
+    <string name="order_customer_contact_hint">איש קשר בחברת לקוח</string>
+    <string name="order_date_hint">תאריך ההזמנה</string>
+    <string name="order_fill_by_date_hint">תאריך יעד</string>
+    <string name="order_address_hint">איפה מתבצעת ההעבודה?</string>
+    <string name="order_details_hint">פרטי ההזמנה</string>
+    <string name="order_workers_on_job_hint">מי עובד על ההזמנה</string>
+    <string name="customer_first_name_hint">שם פרטי</string>
+    <string name="customer_last_name_hint">שם משפחה</string>
+    <string name="customer_phone1_hint">טלפון עיקרי של לקוח</string>
+    <string name="customer_phone2_hint">טלפון נוסף ללקוח</string>
+    <string name="customer_email_hint">דואל לקוח</string>
+    <string name="customer_address_hint">כתובת לקוח</string>
+    <string name="customer_contact_name_hint">איש קשר בחברת לקוח</string>
+    <string name="customer_contact_phone_hint">טלפון ישיר לאיש קשר</string>
+    <string name="customer_details"><u>פרטי לקוח</u></string>
+    <string name="title_phone_number_dialog">לאיזה מספר לחייג?</string>
+    <string name="title_activity_display_record"></string>
+    <string name="workers_fname_hint">שם פרטי</string>
+    <string name="workers_lname_hint">שם משפחה</string>
+    <string name="workers_phone1_hint">טלפון עיקרי</string>
+    <string name="workers_phone2_hint">טלפון נוסף</string>
+    <string name="workers_address_hint">כתובת</string>
+    <string name="workers_email_hint">דואל</string>
+    <string name="workers_occupation_hint">תפקיד/מקצוע</string>
+    <string name="workers_relationship_hint">קשר</string>
+    <string name="products_title_hint">שם מוצר</string>
+    <string name="products_subtitle_hint">כותרת משנה</string>
+    <string name="products_selling_unit_hint">שם יחידה</string>
+    <string name="products_unit_price_hint">מחיר ליחידה</string>
+    <string name="products_notes_hint">הערות</string>
+    <string name="add_member_spinner_prompt">נא לבחור</string>
+    <string name="products_amount_hint">כמות</string>
+    
+	<!-- display activity labels -->
+	<string name="label_order_customer_email">דואל</string>
+	<string name="label_order_customer_phone1">טלפון עיקרי</string>
+	<string name="label_order_customer_phone2">טלפון נוסף</string>
+	<string name="label_order_date_ordered">תאריך הזמנה:</string>
+	<string name="label_order_target_date">תאריך יעד:</string>
+	<string name="label_order_customer_title">שם המזמין</string>
+	<string name="label_order_customer_contact">איש קשר אצל לקוח</string>
+	<string name="label_order_customer_contact_phone">טלפון ישיר לאיש קשר</string>
+	<string name="label_order_address">מיקום ההזמנה</string>
+	<string name="label_order_details">פרטי ההזמנה</string>
+	<string name="label_order_workers_on_job">עובדים הקשורים לנזמנה</string>
+	<string name="label_first_name">שם פרטי</string>
+	<string name="label_last_name">שם משפחה</string>
+	<string name="label_customer_info">פרטי לקוח</string>
+	<string name="label_product_info">מוצרים בהזמנה</string>
+	<string name="label_workers_info">עובדים הקשורים להזמנה</string>
+	
+</resources>
